@@ -1,0 +1,584 @@
+<!-- Modal for Output -->
+<div id="code-modal" style="display:none;">
+    <div id="code-content" class="google-cdn">
+        <div class="toolbar">
+            <button id="close-modal" class="close-button">
+                <span class="fa-solid fa-xmark"></span>
+            </button>
+        </div>
+        <form id="font-variant-form" class="modal-content">
+            <aside class="options">
+                <fieldset class="variants">
+                    <h3>Select font variants:</h3>
+                    <div id="font-variant-toggle"></div>
+                </fieldset>
+                
+                <fieldset class="subsets">
+                    <h3>Select font subsets:</h3>
+                    <div id="font-subsets-toggle"></div>
+                </fieldset>
+            </aside>
+
+            <div class="code-content">
+                <div class="tab-bar">
+                    <a href="#google-cdn" class="tab-button google-cdn active">Google CDN</a>
+                    <a href="#download-zipfile" class="tab-button download-zipfile">Download</a>
+                </div>
+
+                <div id="google-cdn" class="tab-content google-cdn show">
+                    <div class="code-section html-code">
+                        <p class="instruction copy-html">Place this code in the <code><head></code> of your html</p>
+                        <pre id="html-output"><code class="language-html"></code></pre>
+                        <div class="buttons">
+                            <button id="copy-html" class="btn">
+                                <i class="fa-solid fa-copy"></i>
+                                Copy HTML
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="code-section css-code">
+                        <p class="instruction copy-css">Use this in your CSS file.</p>
+                        <pre id="css-output"><code class="language-css"></code></pre>
+                        <div class="buttons">
+                            <button id="copy-css" class="btn">
+                                <i class="fa-solid fa-copy"></i>
+                                Copy CSS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="download-zipfile" class="tab-content download-zipfile">
+                    <p class="instruction download-fonts">If you want to host the fonts locally, click this button to download a ZIP file of the fonts you have selected.</p>
+                    <button type="button" class="btn" id="download-fonts">
+                        <i class="fa-solid fa-download"></i>
+                        <span class="label">Download fonts</span>
+                    </button>
+                    <div class="download-note">
+                        <p class="small text-muted">
+                            💡 Need WOFF2 fonts? You can convert the downloaded TTF files using a free web tool like 
+                            <a href="https://www.fontsquirrel.com/tools/webfont-generator" target="_blank" rel="noopener">Font Squirrel</a> or 
+                            <a href="https://transfonter.org/" target="_blank" rel="noopener">Transfonter</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="font-preview-area">
+    <p class="back-link"><a href="/" id="back-home" class="page-link"><i class="fa-solid fa-arrow-left"></i> Back to home</a></p>
+
+    <div class="font-meta">
+        <div class="buttons">
+            <a href="#getfont" id="get-font" class="link get-font btn">
+                <i class="icon fa-solid fa-floppy-disk"></i>
+                Get font
+            </a>
+        </div>
+        <h1 class="font-name"><span class="show-fontName"></span> <span class="version show-fontVersion"></span></h1>
+        <ul class="meta">
+            <li class="category">
+                <i class="fa-solid fa-tag"></i>
+                <span class="show-fontCategory"></span>
+            </li>
+            <li class="last-updated">
+                <i class="fa-regular fa-calendar"></i>
+                Last updated: <span class="show-lastUpdated"></span>
+            </li>
+            <li class="link">
+                <a href="" id="view-on-google" target="_blank">
+                    View font on Google
+                    <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="text-preview">
+        <div class="toolbar">
+            <div class="toolbar-group background" id="preview-background">
+                <figure class="icon">
+                    <i class="fa-solid fa-paint-roller"></i>
+                </figure>
+                <figure class="color-picker background">
+                    <label for="background-color">Background Colour</label>
+                    <input id="background-color" name="background-color" class="coloris coloris-bg" data-default="#FFFFFF" type="text" value="" data-coloris>
+                </figure>
+            </div>
+
+            <div class="toolbar-group text-one" id="preview-text-one">
+                <figure class="icon">
+                    <i class="fa-solid fa-font"></i>
+                </figure>
+                <figure class="color-picker primary">
+                    <label for="primary-color">Heading Text</label>
+                    <input id="primary-color" name="priamry-color" class="coloris coloris-fg" type="text" data-default="#000000" value="" data-coloris>
+                </figure>
+                <figure class="font-size">
+                    <div class="control">
+                        <label for="font-size-primary">Font size:</label>
+                        <span class="display font-size">0 px</span>
+                        <span class="field">
+                            <input type="range" id="font-size-primary" min="0" max="100" value="56" data-default="56">
+                        </span>
+                    </div>
+                </figure>
+                <figure class="font-weight">
+                    <label for="font-weight-primary">Font weight:</label>
+                    <select id="font-weight-primary" data-default="">
+                        <!-- You will populate these <option>s dynamically -->
+                    </select>
+                </figure>
+            </div>
+
+            <div class="toolbar-group text-two" id="preview-text-two">
+                <figure class="icon">
+                    <i class="fa-solid fa-font"></i>
+                </figure>
+                <figure class="color-picker secondary">
+                    <label for="secondary-color">Body Text</label>
+                    <input id="secondary-color" name="secondary-color" class="coloris coloris-sg" type="text" data-default="#303030" value="" data-coloris>
+                </figure>
+                <figure class="font-size">
+                    <div class="control">
+                        <label for="font-size-secondary">Font size:</label>
+                        <span class="display font-size">0 px</span>
+                        <span class="field">
+                            <input type="range" id="font-size-secondary" min="0" max="100" value="36" data-default="36">
+                        </span>
+                    </div>
+                </figure>
+                <figure class="font-weight">
+                    <label for="font-weight-secondary">Font weight:</label>
+                    <select id="font-weight-secondary" data-default="">
+                        <!-- You will populate these <option>s dynamically -->
+                    </select>
+                </figure>
+            </div>
+
+            <div class="toolbar-group reset-btn">
+                <button id="reset-options" class="toolbar-btn">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <div class="label">Reset</div>
+                </button>
+                <div class="reset-menu">
+                    <ul>
+                        <li>
+                            <a href="#reset-colors" id="reset-colors">
+                                <i class="fa-solid fa-droplet"></i>
+                                <span class="text-label">Reset styles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#reset-text" id="reset-text">
+                                <i class="fa-solid fa-font"></i>
+                                <span class="text-label">Reset text</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <article class="main-text">
+            <p class="text-one"><span contenteditable="true" class="input-one" data-default="The chills you get when listening to music are caused by your brain releasing dopamine.">The chills you get when listening to music are caused by your brain releasing dopamine.</span></p>
+            <p class="text-two"><span contenteditable="true" class="input-two" data-default="When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.">When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.</span></p>
+        </article>
+    </div>
+
+    <a href="#" id="toggle-accessibility" class="section-toggle" data-target="font-accessibility" data-show-text="Show Accessibility Info" data-hide-text="Hide Accessibility Info" >
+        <i class="fa-solid fa-chevron-down"></i>
+        <span class="text-label">Show Accessibility Info</span>
+        <span class="line"></span>
+    </a>
+
+    <section id="font-accessibility"  style="display: none;">
+        <div class="primary-tests test-results" id="primary">
+            <div class="swatches">
+                <figure class="foreground">
+                    <div class="swatch" style="background-color: #000000;"></div>
+                    <div class="code">#000000</div>
+                </figure>
+                <figure class="background">
+                    <div class="swatch" style="background-color: #FFFFFF;"></div>
+                    <div class="code">#FFFFFF</div>
+                </figure>
+            </div>
+            <div class="contrast-rating">
+                <p class="contrast">21.00:1</p>
+                <p class="label">Simple Contrast (WCAG)</p>
+            </div>
+            <div class="results">
+                <div class="text-normal text">
+                    <p class="test-name">Normal Text <i class="fa-solid fa-circle-info"></i><p>
+                    <p class="test aa-normal pass">
+                        <i class="grade fa-solid fa-check"></i>
+                        <span class="label">AA</span>
+                        <span class="min-ratio">4.5:1</span>
+                    </p>
+                    <p class="test aaa-normal fail">
+                        <i class="grade fa-solid fa-xmark"></i>
+                        <span class="label">AAA</span>
+                        <span class="min-ratio">7:1</span>
+                    </p>
+                </div>
+                <div class="text-large text">
+                    <p class="test-name">Large Text <i class="fa-solid fa-circle-info"></i><p>
+                    <p class="test aa-normal pass">
+                        <i class="grade fa-solid fa-check"></i>
+                        <span class="label">AA</span>
+                        <span class="min-ratio">3:1</span>
+                    </p>
+                    <p class="test aaa-normal fail">
+                        <i class="grade fa-solid fa-xmark"></i>
+                        <span class="label">AAA</span>
+                        <span class="min-ratio">4.5:1</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="secondary-tests test-results" id="secondary">
+            <div class="swatches">
+                <figure class="foreground">
+                    <div class="swatch" style="background-color: #000000;"></div>
+                    <div class="code">#000000</div>
+                </figure>
+                <figure class="background">
+                    <div class="swatch" style="background-color: #FFFFFF;"></div>
+                    <div class="code">#FFFFFF</div>
+                </figure>
+            </div>
+            <div class="contrast-rating">
+                <p class="contrast">21.00:1</p>
+                <p class="label">Simple Contrast (WCAG)</p>
+            </div>
+            <div class="results">
+                <div class="text-normal text">
+                    <p class="test-name">Normal Text <i class="fa-solid fa-circle-info"></i><p>
+                    <p class="test aa-normal pass">
+                        <i class="grade fa-solid fa-check"></i>
+                        <span class="label">AA</span>
+                        <span class="min-ratio">4.5:1</span>
+                    </p>
+                    <p class="test aaa-normal fail">
+                        <i class="grade fa-solid fa-xmark"></i>
+                        <span class="label">AAA</span>
+                        <span class="min-ratio">7:1</span>
+                    </p>
+                </div>
+                <div class="text-large text">
+                    <p class="test-name">Large Text <i class="fa-solid fa-circle-info"></i><p>
+                    <p class="test aa-normal pass">
+                        <i class="grade fa-solid fa-check"></i>
+                        <span class="label">AA</span>
+                        <span class="min-ratio">3:1</span>
+                    </p>
+                    <p class="test aaa-normal fail">
+                        <i class="grade fa-solid fa-xmark"></i>
+                        <span class="label">AAA</span>
+                        <span class="min-ratio">4.5:1</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <a href="#" id="toggle-style-guide" class="section-toggle" data-target="style-guide" data-show-text="Show Font Styles" data-hide-text="Hide Font Styles" >
+        <i class="fa-solid fa-chevron-down"></i>
+        <span class="text-label">Show Font Styles</span>
+        <span class="line"></span>
+    </a>
+
+    <aside class="font-data" id="style-guide" style="display: none;">
+        <figure class="preview">
+            <p class="font-name show-fontName"></p>
+            <p class="font-cat show-fontCategory"></p>
+            <p class="font-preview">
+                <span class="preview-a">a</span>
+                <span class="preview-g">g</span>
+            </p>
+        </figure>
+        <figure class="variants" id="font-variants"></figure>
+        <figure class="uses">
+            <div class="option title">
+                <p class="label">Title</p>
+                <p class="data">The Outermost House</p>
+            </div>
+            <div class="option lead">
+                <p class="label">Lead</p>
+                <p class="data">In a world older and more complete tha ours they move finished and complete, gifted with estensions of the senses we have lost or never attained, living by voices we shall never hear.</p>
+            </div>
+            <div class="option paragraph">
+                <p class="label">Paragraph</p>
+                <p class="data">They are not brethren, they are not underlinks, they are other nations, caught with ourselves in the net of life and time, felow prisoners of the spendor and travail of the earth.</p>
+            </div>
+            <div class="option quote">
+                <p class="label">Quote</p>
+                <p class="data">&quot;We need another and a wiser and perhaps a more mystical concept of animals.&quot;</p>
+            </div>
+            <div class="option link">
+                <p class="label">Link</p>
+                <p class="data">
+                    <a href="#link" class="option-one">Option 1 <span class="fa-solid fa-arrow-right icon"></span></a>
+                    <a href="#link" class="option-two">Option 2 <span class="fa-solid fa-arrow-right icon"></span></a>
+                </p>
+            </div>
+            <div class="option button">
+                <p class="label">Button</p>
+                <p class="data">
+                    <a href="#button" class="option-one"><span class="fa-regular fa-circle icon"></span> Call to action</a>
+                    <a href="#button" class="option-two"><span class="fa-regular fa-circle icon"></span> Call to action</a>
+                </p>
+            </div>
+        </figure>
+    </asde>
+</div>
+
+<script>
+    fetchFontsData();
+    initToggles(); // Run on initial load
+
+    $('#get-font').on('click', function(e){
+        e.preventDefault();
+
+        $('#code-content')
+            .removeClass()
+            .addClass('google-cdn');
+        $('#code-content .tab-content').removeClass('show').hide();
+        $('#code-content .tab-button').removeClass('active');
+
+        $('#code-content .tab-content.google-cdn').addClass('show').show();
+        $('#code-content .tab-button.google-cdn').addClass('active');
+
+        $('#code-modal').fadeIn(350);
+    });
+
+    $('#close-modal').on('click', function(){
+        $('#code-modal').fadeOut(350);
+    });
+
+    // Correct way to initialize Coloris() only once for an element
+    Coloris({
+        el: '.coloris',
+        theme: 'pill',
+        swatches: [
+            '#264653',
+            '#2a9d8f',
+            '#e9c46a',
+            '#f4a261',
+            '#e76f51',
+            '#d62828',
+            '#023e8a',
+            '#0077b6',
+            '#0096c7',
+            '#00b4d8',
+            '#48cae4'
+        ]
+    });
+
+    $('#primary-color, #secondary-color, #background-color').on('input change', updateFontStyles);
+
+    loadStoredColors();
+
+    updateFontStyles();
+
+    $(document).on('click', '#reset-colors', function (e) {
+        e.preventDefault();
+
+        // Remove saved values from localStorage
+        localStorage.removeItem(keys.primary);
+        localStorage.removeItem(keys.secondary);
+        localStorage.removeItem(keys.background);
+
+        localStorage.removeItem(keys.textone.fontsize);
+        localStorage.removeItem(keys.texttwo.fontsize);
+
+        // Reset inputs to their default values from data-default attributes
+        ['#primary-color', '#secondary-color', '#background-color'].forEach(selector => {
+            var input = $(selector);
+            var defaultVal = input.data('default');
+            input.val(defaultVal);
+
+            // Update Coloris if available
+            var el = input.get(0);
+            if (window.Coloris?.setInstanceValue) {
+                Coloris.setInstanceValue(el, defaultVal);
+            } else {
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+
+        ['#font-size-primary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default');
+            input.val(defaultSize).change();
+
+            defaultSize = defaultSize + 'px';
+            $('#text-preview .main-text .text-one').css('font-size', defaultSize);
+            $('#text-preview .toolbar #preview-text-one .font-size.display').text(defaultSize);
+        });
+
+        ['#font-size-secondary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default');
+            input.val(defaultSize).change();
+
+            defaultSize = defaultSize + 'px';
+            $('#text-preview .main-text .text-two').css('font-size', defaultSize);
+            $('#text-preview .toolbar #preview-text-two .font-size.display').text(defaultSize);
+        });
+
+        ['#font-weight-primary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default').toString();
+            input.val(defaultSize).change();
+
+            console.log(defaultSize);
+
+            if ( defaultSize.includes('italic') ){
+                defaultSize = defaultSize.replace('italic', '').trim();
+                $('#text-preview .main-text .text-one').css('font-style', 'italic').css('font-weight', defaultSize);
+            } else {
+                $('#text-preview .main-text .text-one').css('font-weight', defaultSize).css('font-style', 'normal');
+            }
+        });
+
+        ['#font-weight-secondary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default').toString();
+            input.val(defaultSize).change();
+
+            console.log(defaultSize);
+
+            if ( defaultSize.includes('italic') ){
+                defaultSize = defaultSize.replace('italic', '').trim();
+                $('#text-preview .main-text .text-two').css('font-style', 'italic').css('font-weight', defaultSize);
+            } else {
+                $('#text-preview .main-text .text-two').css('font-weight', defaultSize).css('font-style', 'normal');
+            }
+        });
+
+        // Apply styles again
+        updateFontStyles();
+    });
+
+    document.querySelectorAll("#primary-color, #secondary-color, #background-color").forEach(input => {
+        input.addEventListener("input", updateAllContrastTests);
+    });
+
+    // Initial run
+    updateAllContrastTests();
+
+    document.querySelectorAll('[contenteditable="true"]').forEach(span => {
+        span.addEventListener('focus', function () {
+            // Delay ensures selection occurs after focus
+            setTimeout(() => {
+                const range = document.createRange();
+                range.selectNodeContents(this);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }, 0);
+        });
+    });
+
+    document.querySelectorAll('[contenteditable="true"]').forEach(span => {
+        const key = `editable-${span.className}`; // Use the class as a unique key
+        const defaultText = span.getAttribute('data-default') || 'Type something…';
+
+        // Load from localStorage or insert default
+        const saved = localStorage.getItem(key);
+        if (saved) {
+            span.textContent = saved;
+        } else if (span.textContent.trim() === '') {
+            span.textContent = defaultText;
+            span.classList.add('is-default');
+        }
+
+        // Select content on focus
+        span.addEventListener('focus', () => {
+            if (span.classList.contains('is-default')) {
+                span.textContent = '';
+                span.classList.remove('is-default');
+            }
+
+            // Delay needed for selection to work
+            setTimeout(() => {
+                const range = document.createRange();
+                range.selectNodeContents(span);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }, 0);
+        });
+
+        // Save to localStorage on blur
+        span.addEventListener('blur', () => {
+            const content = span.textContent.trim();
+            if (content === '') {
+                span.textContent = "Enter text here";
+                span.classList.add('is-default');
+                localStorage.removeItem(key); // Clear it
+            } else {
+                localStorage.setItem(key, content);
+            }
+        });
+    });
+
+    $(document).on('click', '#reset-text', function (e) {
+        e.preventDefault();
+
+        $('[contenteditable="true"]').each(function () {
+            const key = `editable-${$(this).attr('class')}`;
+            const defaultText = $(this).attr('data-default') || 'Type something…';
+
+            $(this).text(defaultText);
+            localStorage.removeItem(key);
+        });
+    });
+
+    $('#copy-html').on('click', function (e) {
+        e.preventDefault();
+        const htmlCode = $('#html-output code').text();
+        navigator.clipboard.writeText(htmlCode)
+            .then(() => showToast('HTML copied!', 'success'))
+            .catch(() => showToast('Failed to copy HTML.', 'error'));
+    });
+
+    $('#copy-css').on('click', function (e) {
+        e.preventDefault();
+        const cssCode = $('#css-output code').text();
+        navigator.clipboard.writeText(cssCode)
+            .then(() => showToast('CSS copied!', 'success'))
+            .catch(() => showToast('Failed to copy CSS.', 'error'));
+    });
+
+    $(document).ready(function(){
+        setTimeout(function(){
+            var textOne = $('#text-preview .main-text .text-one'),
+                textTwo = $('#text-preview .main-text .text-two');
+
+            // Set .text-one (prefers 700)
+            var fontweightOne = setClosestFontWeight(700, availableWeights);
+
+            // Set .text-two (prefers 400)
+            var fontweightTwo = setClosestFontWeight(400, availableWeights);
+
+            var fontsizeOne = textOne.css('font-size'),
+                fontsizeTwo = textTwo.css('font-size');
+
+            setTimeout(function(){
+                $('.main-text .text-one').css('font-weight', fontweightOne);
+                $('#font-weight-primary').val(fontweightOne).change().attr('data-default', fontweightOne); // updates the select menu
+                $('.main-text .text-two').css('font-weight', fontweightTwo);
+                $('#font-weight-secondary').val(fontweightTwo).change().attr('data-default', fontweightTwo); // updates the select menu
+                
+                $('#text-preview .toolbar #preview-text-one .font-size.display').text(fontsizeOne);
+                $('#text-preview .toolbar #preview-text-two .font-size.display').text(fontsizeTwo);
+            }, 500);
+        }, 1000);
+    });
+</script>

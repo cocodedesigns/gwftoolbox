@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Webfont Toolbox</title>
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <meta name="description" content="Google Webfont Toolbox is a developer-focused tool for exploring Google Fonts, previewing styles, testing contrast, generating CDN-ready CSS, and downloading TTF files for local use.">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <link id="google-font-display" rel="stylesheet" type="text/css" href="">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Coloris -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+
+    <!-- Prism.js -->
+    <link href="/css/prism.css" type="text/css" rel="stylesheet" />
+    <script src="/js/prism.js"></script>
+
+    <!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- App -->
+    <script src="/js/app.js"></script>
+</head>
+
+<body class="auto-mode">
+    <header id="app-header">
+        <figure class="logo">
+            <a href="/" class="page-link" data-ga-category="Navigation" data-ga-label="/">
+                <img src="/images/logo_darkmode.png" class="show-on-dark" />
+                <img src="/images/logo_lightmode.png" class="show-on-light" />
+            </a>
+        </figure>
+        <nav class="nav">
+            <a href="/how-it-works/" class="page-link" data-ga-category="Navigation" data-ga-label="/how-it-works/">How it works</a>
+            <a href="/about/" class="page-link" data-ga-category="Navigation" data-ga-label="/about/">About</a>
+            <a href="https://github.com/your-repo" target="_blank" data-ga-category="GitHub" data-ga-label="/github/">GitHub</a>
+        </nav>
+        <button id="toggle-theme" class="theme-toggle" title="Toggle theme">
+            <i class="fa-solid"></i> <!-- Icon will be dynamically updated via JS -->
+        </button>
+    </header>
+    <main id="app-main">
+        <button id="toggle-font-list" aria-expanded="true">
+            <i class="fas fa-chevron-left"></i> 
+            <span class="label">Fonts</span>
+        </button>
+        <section id="font-list">
+            <div class="searchbox">
+                <button id="filter-toggle" class="btn filter">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+                <input type="text" id="font-search" placeholder="Search fonts..." />
+                <div id="filters" style="display: none;">
+                    <ul class="filters">
+                        <li class="heading">Show</li>
+                        <li class="serif">
+                            <div class="toggle-wrapper filter-wrapper filter-serif">
+                                <input type="checkbox" id="serif" name="filters[]" value="serif" checked="checked">
+                                <label class="toggle" for="serif"></label>
+                                <span class="toggle-label">Serif fonts</span>
+                            </div>
+                        </li>
+                        <li class="sans-serif">
+                            <div class="toggle-wrapper filter-wrapper filter-sans-serif">
+                                <input type="checkbox" id="sans-serif" name="filters[]" value="sans-serif" checked="checked">
+                                <label class="toggle" for="sans-serif"></label>
+                                <span class="toggle-label">Sans-serif fonts</span>
+                            </div>
+                        </li>
+                        <li class="display">
+                            <div class="toggle-wrapper filter-wrapper filter-display">
+                                <input type="checkbox" id="display" name="filters[]" value="display" checked="checked">
+                                <label class="toggle" for="display"></label>
+                                <span class="toggle-label">Display fonts</span>
+                            </div>
+                        </li>
+                        <li class="handwriting">
+                            <div class="toggle-wrapper filter-wrapper filter-handwriting">
+                                <input type="checkbox" id="handwriting" name="filters[]" value="handwriting" checked="checked">
+                                <label class="toggle" for="handwriting"></label>
+                                <span class="toggle-label">Handwriting fonts</span>
+                            </div>
+                        </li>
+                        <li class="monospace">
+                            <div class="toggle-wrapper filter-wrapper filter-monospace">
+                                <input type="checkbox" id="monospace" name="filters[]" value="monospace" checked="checked">
+                                <label class="toggle" for="monospace"></label>
+                                <span class="toggle-label">Monospace fonts</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p id="no-results-message" style="display:none; font-style: italic; padding: 1em; color: #666;">
+                No fonts match your current filters.
+            </p>
+            <ul id="available-fonts"></ul>
+            <script>
+                function slugify(str) {
+                    str = str.replace(/^\s+|\s+$/g, ''); // trim leading/trailing white space
+                    str = str.toLowerCase(); // convert string to lowercase
+                    str = str.replace(/[^a-z0-9 -]/g, '') // remove any non-alphanumeric characters
+                            .replace(/\s+/g, '-') // replace spaces with hyphens
+                            .replace(/-+/g, '-'); // remove consecutive hyphens
+                    return str;
+                }
+
+                fetch('/fonts/googlefonts.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        const list = document.getElementById('available-fonts');
+                        data.items.forEach((font, index) => {
+                            const li = document.createElement('li');
+                            li.setAttribute('data-category', font.category);
+
+                            const fontslug = slugify(font.family);
+
+                            li.innerHTML = `
+                                <a href="/preview/${fontslug}/" data-fontid="${index}" data-ga-category="Font Preview" data-ga-label="/preview/${fontslug}/">
+                                    ${font.family}
+                                    <span class="font-metadata">
+                                        <span class="font-cat">${font.category}</span>
+                                    </span>
+                                </a>`;
+
+                            list.appendChild(li);
+                        });
+
+                        // ✅ Now that all fonts are rendered, apply filter logic
+                        if (typeof updateFontList === 'function') updateFontList();
+                    });
+
+                // Attach click handler after font list is created
+                $(document).on('click', '#available-fonts a', function (e) {
+                    e.preventDefault();
+
+                    const fontId = $(this).data('fontid');
+
+                    $('#font-preview').fadeOut(150, function() {
+                        $('#font-preview').load('/fontpreview.html', function() {
+                            fetch('/fonts/googlefonts.json')
+                                .then(res => res.json())
+                                .then(data => {
+                                    const font = data.items[fontId];
+                                    if (!font) return;
+
+                                    $('.font-preview').attr('data-font-id', fontId);
+
+                                    const fontUrl = font.files.regular || Object.values(font.files)[0];
+                                    const fontFace = new FontFace(font.family, `url(${fontUrl})`);
+
+                                    fontFace.load().then(loadedFont => {
+                                        document.fonts.add(loadedFont);
+                                        $('.preview-text').css('font-family', font.family);
+                                    });
+                                });
+
+                            // Re-initialize toggles within the newly loaded content
+                            initToggles('#font-preview');
+
+                            $('#font-preview').scrollTop(0).fadeIn(150);
+                        });
+                    });
+
+                    history.pushState(null, '', $(this).attr('href'));
+                });
+            </script>
+        </section>
+        <div id="resizer"></div>
+        <section id="font-preview"></section>
+    </main>
+    <footer id="app-footer">
+        <div class="copyright">
+            <p class="copyright-text">A webtoy, brought to you by <a href="https://nathanhawkes.dev/?project=colourlibrary" target="_blank" aria-label="View my website, The WP Bard, for information on personal projects and new webtoys">The WP Bard</a></p>
+        </div>
+
+        <nav id="more_links" class="nav-morelinks appnav">
+            <ul class="nav">
+                <li class="navitem"><a href="/cookies-policy/" class="navlink page-link" data-ga-category="Navigation" data-ga-label="/cookies-policy/">Cookie Policy</a></li>
+                <li class="navitem"><a href="/privacy-policy/" class="navlink page-link" data-ga-category="Navigation" data-ga-label="/privacy-policy/">Privacy Policy</a></li>
+                <li class="navitem"><a href="/terms-of-use/" class="navlink page-link" data-ga-category="Navigation" data-ga-label="/terms-of-use/">Terms of Use</a></li>
+                <li class="navitem"><a href="/license/" class="navlink page-link" data-ga-category="Navigation" data-ga-label="/license/">License</a></li>
+            </ul>
+        </nav>
+    </footer>
+
+    <div id="toast" class="toast"><i class="toast-icon"></i><span class="toast-message"></span></div>
+
+    <script>
+
+        $(document).ready(function () {
+            // Load the theme from the cookie or default to 'auto-mode'
+            let currentTheme = getCookie('fontdl_theme') || 'auto-mode';
+            document.body.className = currentTheme; // Apply the current theme on page load
+
+            // Update the icon based on the current theme
+            updateThemeIcon(currentTheme);
+    
+            console.log('loading ' + location)
+            router(location.pathname);
+        });
+    </script>
+</body>
+</html>
