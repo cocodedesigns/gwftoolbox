@@ -71,7 +71,7 @@ $(document).ready(function () {
         });
     }
 
-    function updateColors() {
+    function updateFontStyles() {
         const primary = $('#primary-color').val();
         const secondary = $('#secondary-color').val();
         const background = $('#background-color').val();
@@ -85,13 +85,14 @@ $(document).ready(function () {
         if (background !== '') localStorage.setItem(keys.background, background);
     }
 
-    $('#primary-color, #secondary-color, #background-color').on('input change', updateColors);
+    $('#primary-color, #secondary-color, #background-color').on('input change', updateFontStyles);
 
     loadStoredColors();
 
-    updateColors();
+    updateFontStyles();
 
-    $('#reset-colors').on('click', function () {
+    $('#reset-colors').on('click', function (e) {
+        e.preventDefault();
         // Remove saved values from localStorage
         localStorage.removeItem(keys.primary);
         localStorage.removeItem(keys.secondary);
@@ -113,7 +114,7 @@ $(document).ready(function () {
         });
 
         // Apply styles again
-        updateColors();
+        updateFontStyles();
     });
 });
 
@@ -257,14 +258,18 @@ document.querySelectorAll('[contenteditable="true"]').forEach(span => {
     });
 });
 
-document.getElementById('reset-text').addEventListener('click', () => {
-    document.querySelectorAll('[contenteditable="true"]').forEach(span => {
-        const key = `editable-${span.className}`;
-        const defaultText = span.getAttribute('data-default') || 'Type something…';
+$(document).on('click', '#reset-text', function (e) {
+	e.preventDefault();
 
-        span.textContent = defaultText;
-        localStorage.removeItem(key);
-    });
+    console.log('Resetting text');
+
+	$('[contenteditable="true"]').each(function () {
+		const key = `editable-${$(this).attr('class')}`;
+		const defaultText = $(this).attr('data-default') || 'Type something…';
+
+		$(this).text(defaultText);
+		localStorage.removeItem(key);
+	});
 });
 
 function showToast(message, type = 'success') {

@@ -39,6 +39,12 @@ When using third-party services, there is always the possibility of information 
 │   ├── prism.css
 │   └── style.css
 ├── fonts/
+│   ├── fontawesome
+│   │   ├── fontawesome
+│   │   └── googlefonts.json
+│   ├── inter
+│   │   ├── inter
+│   │   └── googlefonts.json
 │   └── googlefonts.json
 ├── images/
 │   ├── logo_darkmode.png
@@ -46,11 +52,12 @@ When using third-party services, there is always the possibility of information 
 ├── js/
 │   ├── app.js
 │   ├── content.js
+│   └── jszip.min.js
 │   └── prism.js
 ├── pages/
 │   ├── about.html
 │   ├── cookies-policy.html
-│   ├── hmoe.html
+│   ├── home.html
 │   ├── license.html
 │   ├── privacy-policy.html
 │   └── terms-of-use.html

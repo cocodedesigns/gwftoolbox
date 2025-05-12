@@ -1,7 +1,13 @@
 const keys = {
     primary: 'fontPreview_primary',
     secondary: 'fontPreview_secondary',
-    background: 'fontPreview_background'
+    background: 'fontPreview_background',
+    textone: {
+        fontsize: 'fontPreview_textone_size',
+    },
+    texttwo: {
+        fontsize: 'fontPreview_texttwo_size',
+    }
 };
 
 function updateFontList() {
@@ -136,6 +142,7 @@ var fontCategory = '';
 var fontVariants = [];
 var fontSubsets = [];
 var fontFiles = [];
+var availableWeights = [];
 
 function router(pathname) {
     $('#font-preview').fadeOut(150, function() {
@@ -147,7 +154,6 @@ function router(pathname) {
         // Font preview route
         if (pathname.startsWith('/preview/')) {
             $('#font-preview').load('/fontpreview.html', function () {
-                fetchFontsData(); // your custom function to fetch font data
             });
             return;
         }
@@ -252,6 +258,8 @@ function fetchFontsData() {
             $('.show-fontCategory').text(fontCategory);
             $('.show-fontVersion').text(fontVersion);
 
+            console.log(fontName, fontCategory, fontVersion);
+
             fontVariants.forEach(variant => {
                 let weight = 400;
                 let italic = false;
@@ -306,10 +314,19 @@ function fetchFontsData() {
                     </div>
                 `;
 
+                var variantToolbar = `
+                    <option value="${variant}">${label}</option>
+                `;
+
                 // Append to container
                 $('#font-variants').append(variantHTML);
                 $('#font-variant-toggle').append(variantSelect);
+                $('#font-weight-primary').append(variantToolbar);
+                $('#font-weight-secondary').append(variantToolbar);
             });
+
+            // Example available weights (you'll replace this with your dynamic font weight list)
+            availableWeights = fontVariants; // Fallback if undefined
 
             fontSubsets.forEach(subset => {
                 let subsetLabel = subsetLabels[subset];
@@ -340,6 +357,12 @@ function fetchFontsData() {
         });
 }
 
+function setClosestFontWeight(targetWeight, availableWeights) {
+	return availableWeights.reduce((prev, curr) => {
+		return Math.abs(curr - targetWeight) < Math.abs(prev - targetWeight) ? curr : prev;
+	});
+}
+
 function loadStoredColors() {
     const colorInputs = [
         { selector: '#primary-color', key: keys.primary },
@@ -364,19 +387,60 @@ function loadStoredColors() {
     });
 }
 
-function updateColors() {
+function updateFontStyles() {
     const primary = $('#primary-color').val();
     const secondary = $('#secondary-color').val();
     const background = $('#background-color').val();
 
-    $('.text-one').css('color', primary);
-    $('.text-two').css('color', secondary);
-    $('article.main-text').css('background-color', background);
+    $('#text-preview .main-text .text-one').css('color', primary);
+    $('#text-preview .main-text .text-two').css('color', secondary);
+    $('#text-preview .main-text').css('background-color', background);
 
     if (primary !== '') localStorage.setItem(keys.primary, primary);
     if (secondary !== '') localStorage.setItem(keys.secondary, secondary);
     if (background !== '') localStorage.setItem(keys.background, background);
 }
+
+// Font size change
+$(document).on('input', '#font-size-primary', function () {
+	var textoneSize = $(this).val() + 'px';
+	$('#text-preview .main-text .text-one').css('font-size', textoneSize);
+    $('#text-preview .toolbar #preview-text-one .font-size.display').text(textoneSize);
+
+    localStorage.setItem(keys.textone.fontsize, textoneSize);
+});
+
+$(document).on('input', '#font-size-secondary', function () {
+	var texttwoSize = $(this).val() + 'px';
+	$('#text-preview .main-text .text-two').css('font-size', texttwoSize);
+    $('#text-preview .toolbar #preview-text-two .font-size.display').text(texttwoSize);
+
+    localStorage.setItem(keys.texttwo.fontsize, texttwoSize);
+});
+
+// Font size change
+$(document).on('input', '#font-weight-primary', function () {
+	var textoneWeight = $(this).val().toString();
+    
+    if ( textoneWeight.includes('italic') ){
+        textoneWeight = textoneWeight.replace('italic', '').trim();
+        $('#text-preview .main-text .text-one').css('font-style', 'italic').css('font-weight', textoneWeight);
+    } else {
+        $('#text-preview .main-text .text-one').css('font-weight', textoneWeight).css('font-style', 'normal');
+    }
+});
+
+$(document).on('input', '#font-weight-secondary', function () {
+	var texttwoWeight = $(this).val().toString();
+    
+    if ( texttwoWeight.includes('italic') ){
+        texttwoWeight = texttwoWeight.replace('italic', '').trim();
+        $('#text-preview .main-text .text-two').css('font-style', 'italic').css('font-weight', texttwoWeight);
+    } else {
+        $('#text-preview .main-text .text-two').css('font-weight', texttwoWeight).css('font-style', 'normal');
+    }
+});
+
 
 function hexToRgb(hex) {
     hex = hex.replace(/^#/, '');

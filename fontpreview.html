@@ -77,10 +77,6 @@
                 <i class="icon fa-solid fa-floppy-disk"></i>
                 Get font
             </a>
-            <a href="#config" id="preview-config" class="link configure btn button-toggle" data-target="font-preview-config">
-                <i class="icon fa-solid fa-sliders"></i>
-                Configure preview
-            </a>
         </div>
         <h1 class="font-name"><span class="show-fontName"></span> <span class="version show-fontVersion"></span></h1>
         <ul class="meta">
@@ -99,30 +95,99 @@
                 </a>
             </li>
         </ul>
-        
-        <div id="font-preview-config" style="display: none;">
-            <div class="color-picker primary">
-                <label for="primary-color">Heading Text</label>
-                <input id="primary-color" name="priamry-color" class="coloris coloris-fg" type="text" data-default="#000000" value="" data-coloris>
+    </div>
+
+    <div id="text-preview">
+        <div class="toolbar">
+            <div class="toolbar-group background" id="preview-background">
+                <figure class="icon">
+                    <i class="fa-solid fa-paint-roller"></i>
+                </figure>
+                <figure class="color-picker background">
+                    <label for="background-color">Background Colour</label>
+                    <input id="background-color" name="background-color" class="coloris coloris-bg" data-default="#FFFFFF" type="text" value="" data-coloris>
+                </figure>
             </div>
-            <div class="color-picker secondary">
-                <label for="secondary-color">Body Text</label>
-                <input id="secondary-color" name="secondary-color" class="coloris coloris-sg" type="text" data-default="#303030" value="" data-coloris>
+
+            <div class="toolbar-group text-one" id="preview-text-one">
+                <figure class="icon">
+                    <i class="fa-solid fa-font"></i>
+                </figure>
+                <figure class="color-picker primary">
+                    <label for="primary-color">Heading Text</label>
+                    <input id="primary-color" name="priamry-color" class="coloris coloris-fg" type="text" data-default="#000000" value="" data-coloris>
+                </figure>
+                <figure class="font-size">
+                    <div class="control">
+                        <label for="font-size-primary">Font size:</label>
+                        <span class="display font-size">0 px</span>
+                        <span class="field">
+                            <input type="range" id="font-size-primary" min="0" max="100" value="56" data-default="56">
+                        </span>
+                    </div>
+                </figure>
+                <figure class="font-weight">
+                    <label for="font-weight-primary">Font weight:</label>
+                    <select id="font-weight-primary" data-default="">
+                        <!-- You will populate these <option>s dynamically -->
+                    </select>
+                </figure>
             </div>
-            <div class="color-picker background">
-                <label for="background-color">Background Colour</label>
-                <input id="background-color" name="background-color" class="coloris coloris-bg" data-default="#FFFFFF" type="text" value="" data-coloris>
+
+            <div class="toolbar-group text-two" id="preview-text-two">
+                <figure class="icon">
+                    <i class="fa-solid fa-font"></i>
+                </figure>
+                <figure class="color-picker secondary">
+                    <label for="secondary-color">Body Text</label>
+                    <input id="secondary-color" name="secondary-color" class="coloris coloris-sg" type="text" data-default="#303030" value="" data-coloris>
+                </figure>
+                <figure class="font-size">
+                    <div class="control">
+                        <label for="font-size-secondary">Font size:</label>
+                        <span class="display font-size">0 px</span>
+                        <span class="field">
+                            <input type="range" id="font-size-secondary" min="0" max="100" value="36" data-default="36">
+                        </span>
+                    </div>
+                </figure>
+                <figure class="font-weight">
+                    <label for="font-weight-secondary">Font weight:</label>
+                    <select id="font-weight-secondary" data-default="">
+                        <!-- You will populate these <option>s dynamically -->
+                    </select>
+                </figure>
             </div>
-            <div class="reset-btn">
-                <button id="reset-colors" class="btn">Reset Colors</button>
-                <button id="reset-text" class="btn">Reset Text</button>
+
+            <div class="toolbar-group reset-btn">
+                <button id="reset-options" class="toolbar-btn">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <div class="label">Reset</div>
+                </button>
+                <div class="reset-menu">
+                    <ul>
+                        <li>
+                            <a href="#reset-colors" id="reset-colors">
+                                <i class="fa-solid fa-droplet"></i>
+                                <span class="text-label">Reset styles</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#reset-text" id="reset-text">
+                                <i class="fa-solid fa-font"></i>
+                                <span class="text-label">Reset text</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
+
+        <article class="main-text">
+            <p class="text-one"><span contenteditable="true" class="input-one" data-default="The chills you get when listening to music are caused by your brain releasing dopamine.">The chills you get when listening to music are caused by your brain releasing dopamine.</span></p>
+            <p class="text-two"><span contenteditable="true" class="input-two" data-default="When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.">When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.</span></p>
+        </article>
     </div>
-    <article class="main-text">
-        <p class="text-one"><span contenteditable="true" class="input-one" data-default="The chills you get when listening to music are caused by your brain releasing dopamine.">The chills you get when listening to music are caused by your brain releasing dopamine.</span></p>
-        <p class="text-two"><span contenteditable="true" class="input-two" data-default="When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.">When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.</span></p>
-    </article>
 
     <a href="#" id="toggle-accessibility" class="section-toggle" data-target="font-accessibility" data-show-text="Show Accessibility Info" data-hide-text="Hide Accessibility Info" >
         <i class="fa-solid fa-chevron-down"></i>
@@ -273,9 +338,7 @@
 </div>
 
 <script>
-    // Call the function to fetch and process the fonts data
     fetchFontsData();
-
     initToggles(); // Run on initial load
 
     $('#get-font').on('click', function(e){
@@ -316,37 +379,90 @@
         ]
     });
 
-    $(document).ready(function () {
-        $('#primary-color, #secondary-color, #background-color').on('input change', updateColors);
+    $('#primary-color, #secondary-color, #background-color').on('input change', updateFontStyles);
 
-        loadStoredColors();
+    loadStoredColors();
 
-        updateColors();
+    updateFontStyles();
 
-        $('#reset-colors').on('click', function () {
-            // Remove saved values from localStorage
-            localStorage.removeItem(keys.primary);
-            localStorage.removeItem(keys.secondary);
-            localStorage.removeItem(keys.background);
+    $(document).on('click', '#reset-colors', function (e) {
+        e.preventDefault();
 
-            // Reset inputs to their default values from data-default attributes
-            ['#primary-color', '#secondary-color', '#background-color'].forEach(selector => {
-                const input = $(selector);
-                const defaultVal = input.data('default');
-                input.val(defaultVal);
+        // Remove saved values from localStorage
+        localStorage.removeItem(keys.primary);
+        localStorage.removeItem(keys.secondary);
+        localStorage.removeItem(keys.background);
 
-                // Update Coloris if available
-                const el = input.get(0);
-                if (window.Coloris?.setInstanceValue) {
-                    Coloris.setInstanceValue(el, defaultVal);
-                } else {
-                    el.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-            });
+        localStorage.removeItem(keys.textone.fontsize);
+        localStorage.removeItem(keys.texttwo.fontsize);
 
-            // Apply styles again
-            updateColors();
+        // Reset inputs to their default values from data-default attributes
+        ['#primary-color', '#secondary-color', '#background-color'].forEach(selector => {
+            var input = $(selector);
+            var defaultVal = input.data('default');
+            input.val(defaultVal);
+
+            // Update Coloris if available
+            var el = input.get(0);
+            if (window.Coloris?.setInstanceValue) {
+                Coloris.setInstanceValue(el, defaultVal);
+            } else {
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         });
+
+        ['#font-size-primary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default');
+            input.val(defaultSize).change();
+
+            defaultSize = defaultSize + 'px';
+            $('#text-preview .main-text .text-one').css('font-size', defaultSize);
+            $('#text-preview .toolbar #preview-text-one .font-size.display').text(defaultSize);
+        });
+
+        ['#font-size-secondary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default');
+            input.val(defaultSize).change();
+
+            defaultSize = defaultSize + 'px';
+            $('#text-preview .main-text .text-two').css('font-size', defaultSize);
+            $('#text-preview .toolbar #preview-text-two .font-size.display').text(defaultSize);
+        });
+
+        ['#font-weight-primary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default').toString();
+            input.val(defaultSize).change();
+
+            console.log(defaultSize);
+
+            if ( defaultSize.includes('italic') ){
+                defaultSize = defaultSize.replace('italic', '').trim();
+                $('#text-preview .main-text .text-one').css('font-style', 'italic').css('font-weight', defaultSize);
+            } else {
+                $('#text-preview .main-text .text-one').css('font-weight', defaultSize).css('font-style', 'normal');
+            }
+        });
+
+        ['#font-weight-secondary'].forEach(selector => {
+            var input = $(selector);
+            var defaultSize = input.data('default').toString();
+            input.val(defaultSize).change();
+
+            console.log(defaultSize);
+
+            if ( defaultSize.includes('italic') ){
+                defaultSize = defaultSize.replace('italic', '').trim();
+                $('#text-preview .main-text .text-two').css('font-style', 'italic').css('font-weight', defaultSize);
+            } else {
+                $('#text-preview .main-text .text-two').css('font-weight', defaultSize).css('font-style', 'normal');
+            }
+        });
+
+        // Apply styles again
+        updateFontStyles();
     });
 
     document.querySelectorAll("#primary-color, #secondary-color, #background-color").forEach(input => {
@@ -412,12 +528,14 @@
         });
     });
 
-    document.getElementById('reset-text').addEventListener('click', () => {
-        document.querySelectorAll('[contenteditable="true"]').forEach(span => {
-            const key = `editable-${span.className}`;
-            const defaultText = span.getAttribute('data-default') || 'Type something…';
+    $(document).on('click', '#reset-text', function (e) {
+        e.preventDefault();
 
-            span.textContent = defaultText;
+        $('[contenteditable="true"]').each(function () {
+            const key = `editable-${$(this).attr('class')}`;
+            const defaultText = $(this).attr('data-default') || 'Type something…';
+
+            $(this).text(defaultText);
             localStorage.removeItem(key);
         });
     });
@@ -438,4 +556,29 @@
             .catch(() => showToast('Failed to copy CSS.', 'error'));
     });
 
+    $(document).ready(function(){
+        setTimeout(function(){
+            var textOne = $('#text-preview .main-text .text-one'),
+                textTwo = $('#text-preview .main-text .text-two');
+
+            // Set .text-one (prefers 700)
+            var fontweightOne = setClosestFontWeight(700, availableWeights);
+
+            // Set .text-two (prefers 400)
+            var fontweightTwo = setClosestFontWeight(400, availableWeights);
+
+            var fontsizeOne = textOne.css('font-size'),
+                fontsizeTwo = textTwo.css('font-size');
+
+            setTimeout(function(){
+                $('.main-text .text-one').css('font-weight', fontweightOne);
+                $('#font-weight-primary').val(fontweightOne).change().attr('data-default', fontweightOne); // updates the select menu
+                $('.main-text .text-two').css('font-weight', fontweightTwo);
+                $('#font-weight-secondary').val(fontweightTwo).change().attr('data-default', fontweightTwo); // updates the select menu
+                
+                $('#text-preview .toolbar #preview-text-one .font-size.display').text(fontsizeOne);
+                $('#text-preview .toolbar #preview-text-two .font-size.display').text(fontsizeTwo);
+            }, 500);
+        }, 1000);
+    });
 </script>
