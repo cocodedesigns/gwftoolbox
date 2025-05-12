@@ -23,6 +23,8 @@ body.light-mode {
     --color-button-hover: #d0d0d0;
     --color-button-text: #333;
     --color-ui-background: #fff;
+    --color-notice-bg: #fff9db;         /* pastel yellow */
+    --color-notice-border: #f7c948;     /* dandelion yellow */
 }
 
 body.dark-mode {
@@ -39,6 +41,8 @@ body.dark-mode {
     --color-button-hover: #575757;
     --color-button-text: #fafafa;
     --color-ui-background: #1e1e1e;
+    --color-notice-bg: #4b3f1f;         /* soft dusky yellow-brown */
+    --color-notice-border: #ffcc33;     /* vibrant dark yellow */
 }
 
 /* Uses system preference */
@@ -57,6 +61,8 @@ body.dark-mode {
         --color-button-hover: #575757;
         --color-button-text: #fafafa;
         --color-ui-background: #1e1e1e;
+        --color-notice-bg: #4b3f1f;         /* soft dusky yellow-brown */
+        --color-notice-border: #ffcc33;     /* vibrant dark yellow */
     }
 }
 
@@ -75,6 +81,8 @@ body.dark-mode {
         --color-button-hover: #d0d0d0;
         --color-button-text: #333;
         --color-ui-background: #fff;
+        --color-notice-bg: #fff9db;         /* pastel yellow */
+        --color-notice-border: #f7c948;     /* dandelion yellow */
     }
 }
 
@@ -599,6 +607,46 @@ body.light-mode #app-header .logo .show-on-light{
     line-height: 1.5;
 }
 
+#font-preview .page-wrap.single-page{
+    padding: 2rem 1rem;
+}
+
+#font-preview .page-wrap.single-page .page-title{
+    font-size: 2.95rem;
+    padding: 0 0 1rem;
+}
+
+#font-preview .page-wrap.single-page p{
+    line-height: 1.5;
+    padding: 0 0 0.7rem;
+}
+
+#font-preview .page-wrap.single-page ul{ 
+    margin: 0 0 0 2rem;
+    padding: 0 0 1rem;
+}
+
+#font-preview .page-wrap.single-page.policy-page table{
+    margin: 0 0 1.5rem;
+    border-bottom: solid 1px var(--color-button-border);
+    border-spacing: 0;
+}
+
+#font-preview .page-wrap.single-page.policy-page table th, #font-preview .page-wrap.single-page.policy-page table td{
+    padding: 0.5rem;
+    border-top: solid 1px var(--color-button-border);
+}
+
+#font-preview .page-wrap.single-page.policy-page table th{
+    background-color: var(--color-table-th);
+    width: 150px;
+    text-align: left;
+}
+
+#font-preview .page-wrap.single-page.policy-page .section-heading{
+    padding: 0 0 0.75rem;
+}
+
 /* Main layout */
 .font-meta {
     font-family: var(--body-typeface);
@@ -614,6 +662,10 @@ body.light-mode #app-header .logo .show-on-light{
     margin: 0 0 1rem;
     width: calc( 100% - 380px );
     padding: 0 2rem 0 0;
+}
+
+.font-meta .last-updated span{ 
+    font-weight: 700;
 }
 
 .font-meta .buttons{
@@ -1063,6 +1115,7 @@ figure.uses {
 
 #code-content {
     background: var(--color-ui-background);
+    font-family: var(--body-typeface);
     padding: 20px;
     border-radius: 8px;
     width: 100%;
@@ -1123,6 +1176,11 @@ figure.uses {
 
 #code-content .options fieldset{
     border: none;
+}
+
+#code-content .options fieldset h3{
+    font-size: 1rem;
+    padding: 0 0 0.75rem;
 }
 
 #code-content .options fieldset:not(:last-of-type){
@@ -1196,10 +1254,28 @@ figure.uses {
     max-height: 350px;
 }
 
+#code-content .code-content .download-zipfile p{
+    line-height: 1.5;
+}
+
+#code-content .code-content .download-zipfile .btn{
+    margin: 1.5rem 0;
+}
+
 .download-note {
-    margin-top: 1rem;
     font-size: 0.875rem;
-    color: #666;
+    color: var(--color-text);
+    background-color: var(--color-notice-bg);
+    border-left: solid 6px var(--color-notice-border);
+    padding: 0.75rem 1.25rem;
+    line-height: 1.5;
+}
+
+.download-note i{
+    display: block;
+    float: left;
+    font-size: 1.3rem;
+    padding: 0.35rem 0.75rem 0.75rem 0;
 }
 .download-note a {
     color: var(--color-link);
@@ -1485,4 +1561,57 @@ input[type="checkbox"]:checked + .toggle::after {
 
 #font-accessibility .test-results .results .test.fail i{
     color: #e74c3c;
+}
+
+#silktide-cookie-icon.bottomRight{
+    bottom: 60px !important;
+    right: 40px !important;
+}
+
+#text-preview .loading{
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding: 2rem;
+    z-index: 100;
+    background-color: var(--color-ui-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#text-preview .loading .loader {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    position: relative;
+}
+#text-preview .loading .loader::after,
+#text-preview .loading .loader::before {
+    content: '';  
+    box-sizing: border-box;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--color-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: animloader 2s linear infinite;
+}
+#text-preview .loading .loader::after {
+    animation-delay: 1s;
+}
+
+@keyframes animloader {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
 }

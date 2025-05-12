@@ -294,7 +294,9 @@ function fetchFontsData() {
                 // HTML template
                 var variantHTML = `
                     <div class="option variant-${variant}">
-                        <div class="label">${label}</div>
+                        <div class="label">
+                            <p>${label}</p>
+                        </div>
                         <div class="data" style="${style}">
                             <p class="font-alpha-upper">ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
                             <p class="font-alpha-lower">abcdefghijklmnopqrstuvwxyz</p>

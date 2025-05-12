@@ -57,9 +57,12 @@
                     </button>
                     <div class="download-note">
                         <p class="small text-muted">
-                            💡 Need WOFF2 fonts? You can convert the downloaded TTF files using a free web tool like 
-                            <a href="https://www.fontsquirrel.com/tools/webfont-generator" target="_blank" rel="noopener">Font Squirrel</a> or 
-                            <a href="https://transfonter.org/" target="_blank" rel="noopener">Transfonter</a>.
+                            <i class="fa-solid fa-flag"></i>
+                            <span class="text">
+                                Need WOFF2 fonts? You can convert the downloaded TTF files using a free web tool like 
+                                <a href="https://www.fontsquirrel.com/tools/webfont-generator" target="_blank" rel="noopener">Font Squirrel</a> or 
+                                <a href="https://transfonter.org/" target="_blank" rel="noopener">Transfonter</a>.
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -98,6 +101,10 @@
     </div>
 
     <div id="text-preview">
+        <div class="loading">
+            <span class="loader"></span>
+        </div>
+
         <div class="toolbar">
             <div class="toolbar-group background" id="preview-background">
                 <figure class="icon">
@@ -578,6 +585,10 @@
                 
                 $('#text-preview .toolbar #preview-text-one .font-size.display').text(fontsizeOne);
                 $('#text-preview .toolbar #preview-text-two .font-size.display').text(fontsizeTwo);
+
+                setTimeout(function(){
+                    $('#text-preview .loading').fadeOut(250);
+                }, 200);
             }, 500);
         }, 1000);
     });

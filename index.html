@@ -35,6 +35,10 @@
 
     <!-- App -->
     <script src="/js/app.js"></script>
+
+    <!-- Cookie Banner -->
+    <link rel="stylesheet" href="/css/silktide-consent-manager.css" />
+    <script src="/js/silktide-consent-manager.js"></script>
 </head>
 
 <body class="auto-mode">
@@ -46,9 +50,9 @@
             </a>
         </figure>
         <nav class="nav">
-            <a href="/how-it-works/" class="page-link" data-ga-category="Navigation" data-ga-label="/how-it-works/">How it works</a>
-            <a href="/about/" class="page-link" data-ga-category="Navigation" data-ga-label="/about/">About</a>
-            <a href="https://github.com/your-repo" target="_blank" data-ga-category="GitHub" data-ga-label="/github/">GitHub</a>
+            <a href="/about/" class="page-link" data-ga-category="Navigation" data-ga-label="/about/">About Me</a>
+            <a href="/about-gwftoolbox/" class="page-link" data-ga-category="Navigation" data-ga-label="/about-gwftoolbox/">About the toolbox</a>
+            <a href="https://github.com/cocodedesigns/gwftoolbox/" target="_blank" data-ga-category="GitHub" data-ga-label="/github/">GitHub</a>
         </nav>
         <button id="toggle-theme" class="theme-toggle" title="Toggle theme">
             <i class="fa-solid"></i> <!-- Icon will be dynamically updated via JS -->
@@ -215,5 +219,6 @@
             router(location.pathname);
         });
     </script>
+    <script src="/js/cookie-banner.js"></script>
 </body>
 </html>
