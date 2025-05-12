@@ -1,6 +1,6 @@
 # Google Fonts Toolbox
 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![GitHub License](https://img.shields.io/github/license/cocodedesigns/gwftoolbox)
 ![Built With](https://img.shields.io/badge/Built_with-HTML%2C%20CSS%2C%20JS-brightgreen)
 ![Status](https://img.shields.io/badge/status-in%20progress-yellow)
 ![GitHub last commit](https://img.shields.io/github/last-commit/cocodedesigns/gwftoolbox)
@@ -8,91 +8,62 @@
 
 A lightweight, single-page frontend app for exploring Google Fonts, previewing them in real time, and downloading selected fonts. Built with HTML, CSS, JavaScript, and jQuery, with dynamic routing, theme support, and cookie-based preferences.
 
-## 🚀 Features
+## Features
 
-- **SPA-like routing** using `load()` and `history.pushState()` for seamless navigation
-- **Google Fonts preview** from a local `googlefonts.json` data file
-- **Pretty URLs** handled by Nginx rewrite rules
-- **Dark/Light/Auto theme** toggle with cookies
-- **Google Analytics tracking** for key interactions
-- **Responsive design** and minimal dependencies
+- Previews the library of Google's fonts using **Google Fonts API**, in all styles and weights
+- Checks colour contrast to **WCAG** Guidelines (_AA_ / _AAA_)
+- Include fonts on your website using **Google's CDN**
+- Download fonts in **TTF** format for self-hosting
 
-## 📁 Project Structure
+## Dependencies
 
-```
+This project uses **[jQuery](https://jquery.com)**. It comes bundled with these scripts:
 
+* [Google Fonts API](https://developers.google.com/fonts)
+* [Font Awesome](https://fontawesome.com)
+* [Prism.js](https://prismjs.com/)
+* [JSZip](https://stuk.github.io/jszip/)
+* [Filesaver.js](https://github.com/eligrey/FileSaver.js)
+
+These scripts are bundled directly with the repo, but can be replaced with CDN versions. It also comes bundled with **[Inter](https://fonts.google.com/specimen/Inter)** (in WOFF2 format).
+
+### Why bundle them locally?
+
+When using third-party services, there is always the possibility of information being collected by the provider's servers. Using a local copy of the scripts prevents most of that information, ensuring better compliance with GDPR and other privacy regulations.
+
+## Project Structure
+
+````
 /
-├── index.html
-├── pages/
-│   ├── about.html
-│   ├── how-it-works.html
-│   └── ...
-├── preview/
-│   └── {font-name}/ → loads fontpreview\.html with the correct font
-├── fontpreview\.html
+├── css/
+│   ├── prism.css
+│   └── style.css
 ├── fonts/
 │   └── googlefonts.json
-├── css/
-│   └── style.css
+├── images/
+│   ├── logo_darkmode.png
+│   └── logo_lightmode.png
 ├── js/
-│   └── app.js
-├── set-theme.php
-├── media/
-│   └── (images, favicons, etc.)
+│   ├── app.js
+│   ├── content.js
+│   └── prism.js
+├── pages/
+│   ├── about.html
+│   ├── cookies-policy.html
+│   ├── hmoe.html
+│   ├── license.html
+│   ├── privacy-policy.html
+│   └── terms-of-use.html
+├── .htaccess
+├── fontpreview.html
+├── index.html
+├── LICENSE.md
 └── README.md
-
 ````
 
-## 🧰 Local Setup
+## License
 
-This app is designed for local development using [Local by Flywheel](https://localwp.com/) with **Nginx**. No `.htaccess` is needed.
-
-### Routing
-
-Nginx configuration should include:
-
-```nginx
-location / {
-    try_files $uri $uri/ /index.html;
-}
-````
-
-This ensures that clean URLs like `/about/` or `/preview/roboto/` are properly routed to the single-page app.
-
-## 🎨 Theme Toggle
-
-Toggle between:
-
-* `light-mode`
-* `dark-mode`
-* `auto-mode`
-
-Cookie: `fontdl_theme`
-Icon updates automatically using Font Awesome.
-
-## 📊 Analytics
-
-Google Analytics tracks clicks on:
-
-* `.page-link` (internal nav links)
-* `.font-link` (font previews)
-* `#download-fonts` (download trigger)
-
-## 📅 Last Updated
-
-The last update is stored in a JavaScript `lastUpdated` variable (`YYYY-MM-DD`) and dynamically inserted into the DOM as `F d, Y`.
-
-Example:
-
-```js
-const lastUpdated = '2025-05-12';
-const options = { year: 'numeric', month: 'long', day: 'numeric' };
-$('.show-lastUpdated').text(new Date(lastUpdated).toLocaleDateString(undefined, options));
-```
-
-## 📄 License
-
-MIT — free to use, modify, and distribute.
+This project is created and released under **MIT License**.
 
 ---
 
