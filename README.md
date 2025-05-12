@@ -1,10 +1,9 @@
 # Google Fonts Toolbox
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Status](https://img.shields.io/badge/status-in%20development-blue)
 ![Built With](https://img.shields.io/badge/Built_with-HTML%2C%20CSS%2C%20JS-brightgreen)
 ![Status](https://img.shields.io/badge/status-in%20progress-yellow)
-[![Last Updated](https://img.shields.io/badge/last_updated-dynamic-lightgrey?label=last%20updated)](https://thewpbard.dev)
+![GitHub last commit](https://img.shields.io/github/last-commit/cocodedesigns/gwftoolbox)
 ![Dark Mode](https://img.shields.io/badge/dark%20mode-supported-black)
 
 A lightweight, single-page frontend app for exploring Google Fonts, previewing them in real time, and downloading selected fonts. Built with HTML, CSS, JavaScript, and jQuery, with dynamic routing, theme support, and cookie-based preferences.
