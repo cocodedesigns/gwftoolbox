@@ -138,7 +138,6 @@ var fontSubsets = [];
 var fontFiles = [];
 
 function router(pathname) {
-    console.log(pathname);
     $('#font-preview').fadeOut(150, function() {
         if (!pathname || pathname === '/') {
             $('#font-preview').load('/pages/home.html');
@@ -203,8 +202,6 @@ function fetchFontsData() {
 
             // Convert font name to Google Fonts API format
             var googleFontName = fontName.replace(/ /g, '+');
-
-            console.log(fontName, fontVersion, fontCategory, fontVariants, fontSubsets, fontFiles, lastUpdated);
 
             // Map and filter variants to readable weights and italic variants
             var variants = Object.keys(font.files).map(v => {
