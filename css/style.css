@@ -1014,10 +1014,6 @@ figure.uses {
     overflow: auto;
 }
 
-#code-content .code-content .google-code{}
-
-#code-content .code-content .google-code .code-section{}
-
 #code-content .code-content .google-code .code-section:not(:last-of-type){
     padding-bottom: 1.5rem;
 }
