@@ -143,6 +143,7 @@ var fontVariants = [];
 var fontSubsets = [];
 var fontFiles = [];
 var availableWeights = [];
+var ttfFile = '';
 
 function router(pathname) {
     $('#font-preview').fadeOut(150, function() {
@@ -205,6 +206,7 @@ function fetchFontsData() {
             fontSubsets = font.subsets;
             fontFiles = font.files;
             lastUpdated = font.lastModified;
+            ttfFile = font.files.regular;
 
             // Convert font name to Google Fonts API format
             var googleFontName = fontName.replace(/ /g, '+');
@@ -258,9 +260,7 @@ function fetchFontsData() {
             $('.show-fontCategory').text(fontCategory);
             $('.show-fontVersion').text(fontVersion);
 
-            console.log(fontName, fontCategory, fontVersion);
-
-            fontVariants.forEach(variant => {
+            variants.forEach(variant => {
                 let weight = 400;
                 let italic = false;
 
@@ -294,7 +294,9 @@ function fetchFontsData() {
                 // HTML template
                 var variantHTML = `
                     <div class="option variant-${variant}">
-                        <div class="label">${label}</div>
+                        <div class="label">
+                            <p>${label}</p>
+                        </div>
                         <div class="data" style="${style}">
                             <p class="font-alpha-upper">ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
                             <p class="font-alpha-lower">abcdefghijklmnopqrstuvwxyz</p>
@@ -326,7 +328,7 @@ function fetchFontsData() {
             });
 
             // Example available weights (you'll replace this with your dynamic font weight list)
-            availableWeights = fontVariants; // Fallback if undefined
+            availableWeights = variants; // Fallback if undefined
 
             fontSubsets.forEach(subset => {
                 let subsetLabel = subsetLabels[subset];
@@ -677,7 +679,7 @@ $(document).on('click', '#code-modal .tab-button', function (e) {
         .addClass(target.replace('#', ''));
 });
 
-$('#download-fonts').on('click', async function () {
+$(document).on('click', '#download-fonts', async function () {
     const $btn = $(this);
     const $icon = $btn.find('i');
     const $label = $btn.find('.label');
@@ -999,9 +1001,11 @@ $('#download-fonts').on('click', async function () {
                 let weight = isItalic ? variant.replace('italic', '') : variant;
                 const label = weight === '400' ? 'Regular' : weight;
 
+                var textLabel = weightLabels[weight] + ' (' + weight + ')' + ( isItalic ? ' Italic' : '' );
+
                 return `
                     <div class="option variant-${variant}">
-                        <div class="label">${label}</div>
+                        <div class="label">${textLabel}</div>
                         <div class="data" style="font-weight: ${weight}; ${isItalic ? 'font-style: italic;' : ''}">
                             <p class="font-alpha-upper">ABCDEFGHIJKLMNOPQRSTUVWXYZ</p>
                             <p class="font-alpha-lower">abcdefghijklmnopqrstuvwxyz</p>
@@ -1180,6 +1184,167 @@ $(document).on('click', '#toggle-theme', function () {
 
 // Trigger when checkboxes change
 $(document).on('change', '#font-variant-form input[name="variants[]"]', generateFontOutput);
+
+async function getVerticalMetrics(fontSrc) {
+    let font = await loadFont(fontSrc);
+    let fontFamily = font.tables.name.fontFamily.en;
+
+    // font metrics
+    let { unitsPerEm, ascender, descender } = font;
+    let xHeight = font.tables.os2.sxHeight;
+    let capHeight = font.tables.os2.sCapHeight;
+
+    // font rendering scale
+    let fontSize = 100;
+    let scale = fontSize / unitsPerEm;
+
+    let yBaseline = ascender * scale;
+    let yXHeight = yBaseline - xHeight * scale;
+    let yCapHeight = yBaseline - capHeight * scale;
+    let yDescender = yBaseline + Math.abs(descender) * scale;
+
+    // output metrics to pre tag
+    let data = {
+        fontFamily,
+        xHeight,
+        capHeight,
+        ascender,
+        descender,
+        unitsPerEm
+    };
+
+    // draw font glyph
+    let yOffset = fontSize * (ascender / unitsPerEm);
+    let path = font.getPath('AaBbCcHhIiJjXxYyZz', 0, yOffset, fontSize);
+
+    const labelOffset = 2;
+    const viewWidth = 1100;
+
+    preview.setAttribute('d', path.toPathData(1));
+
+    // position guide lines
+    pathBaseline.setAttribute('y1', yBaseline);
+    pathBaseline.setAttribute('y2', yBaseline);
+
+    pathXheight.setAttribute('y1', yXHeight);
+    pathXheight.setAttribute('y2', yXHeight);
+
+    pathCapHeight.setAttribute('y1', yCapHeight);
+    pathCapHeight.setAttribute('y2', yCapHeight);
+
+    pathDescender.setAttribute('y1', yDescender);
+    pathDescender.setAttribute('y2', yDescender);
+
+    // update SVG viewBox
+    let lineHeight = (ascender + Math.abs(descender)) * scale;
+    svg.setAttribute('viewBox', [0, 0, viewWidth, lineHeight]);
+
+    // Position labels slightly above the lines
+
+    // Set Y positions
+    labelBaselineLeft.setAttribute('y', yBaseline - labelOffset);
+    labelXheightLeft.setAttribute('y', yXHeight - labelOffset);
+    labelCapHeightLeft.setAttribute('y', yCapHeight - labelOffset);
+    labelDescenderLeft.setAttribute('y', yDescender - labelOffset);
+
+    labelBaselineRight.setAttribute('y', yBaseline - labelOffset);
+    labelXheightRight.setAttribute('y', yXHeight - labelOffset);
+    labelCapHeightRight.setAttribute('y', yCapHeight - labelOffset);
+    labelDescenderRight.setAttribute('y', yDescender - labelOffset);
+
+    // Set X positions for right-side labels
+    labelBaselineRight.setAttribute('x', viewWidth - 5);
+    labelXheightRight.setAttribute('x', viewWidth - 5);
+    labelCapHeightRight.setAttribute('x', viewWidth - 5);
+    labelDescenderRight.setAttribute('x', viewWidth - 5);
+}
+
+
+/**
+* opentype.js helper
+* Based on @yne's comment
+* https://github.com/opentypejs/opentype.js/issues/183#issuecomment-1147228025
+* will decompress woff2 files
+*/
+async function loadFont(src, options = {}) {
+    let buffer = {};
+    let font = {};
+    let ext = 'woff2';
+    let url;
+
+    // 1. is file
+    if (src instanceof Object) {
+        // get file extension to skip woff2 decompression
+        let filename = src.name.split(".");
+        ext = filename[filename.length - 1];
+        buffer = await src.arrayBuffer();
+    }
+
+    // 2. is base64 data URI
+    else if (/^data/.test(src)) {
+        // is base64
+        let data = src.split(";");
+        ext = data[0].split("/")[1];
+
+        // create buffer from blob
+        let srcBlob = await (await fetch(src)).blob();
+        buffer = await srcBlob.arrayBuffer();
+    }
+
+    // 3. is url
+    else {
+
+
+        // if google font css - retrieve font src
+        if (/googleapis.com/.test(src)) {
+        ext = 'woff2';
+        src = await getGoogleFontUrl(src, options);
+        }
+
+
+        // might be subset - no extension
+        let hasExt = (src.includes('.woff2') || src.includes('.woff') || src.includes('.ttf') || src.includes('.otf')) ? true : false;
+        url = src.split(".");
+        ext = hasExt ? url[url.length - 1] : 'woff2';
+
+        let fetchedSrc = await fetch(src);
+        buffer = await fetchedSrc.arrayBuffer();
+    }
+
+    // decompress woff2
+    if (ext === "woff2") {
+        buffer = Uint8Array.from(Module.decompress(buffer)).buffer;
+    }
+
+    // parse font
+    font = opentype.parse(buffer);
+    return font;
+}
+
+async function getFontDeveloperInfo(fontSrc) {
+    // Load the font using OpenType.js
+    let font = await loadFont(fontSrc);
+    
+    // Access the 'name' table to get font metadata
+    let nameTable = font.tables.name;
+
+    // Get developer information from the name table
+    let developerInfo = {
+        fontFamily: nameTable.fontFamily.en, // Font family name
+        fontSubFamily: nameTable.fontSubFamily, // Font subfamily (e.g., Regular, Bold)
+        designerName: nameTable.designerName ? nameTable.designerName.en : "Not available", // Designer name
+        designerURL: nameTable.designerURL ? nameTable.designerURL.en : "Not available", // Designer URL (if available)
+        copyright: nameTable.copyright ? nameTable.copyright.en : "Not available", // Copyright info
+        license: nameTable.license ? nameTable.license.en : "Not available" // License info (if available)
+    };
+    
+    // Optionally, you can set the data into an HTML element
+    $('#style-guide .ttf-meta .designer').text(developerInfo.designerName);
+    $('#style-guide .ttf-meta .designer-url').text(developerInfo.designerURL);
+    $('#style-guide .ttf-meta .copyright').text(developerInfo.copyright);
+    $('#style-guide .ttf-meta .license').text(developerInfo.license);
+}
+
 
 function trackClick(category, label, action = 'click') {
     if (typeof gtag === 'function') {
