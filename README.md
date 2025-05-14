@@ -24,6 +24,7 @@ This project uses **[jQuery](https://jquery.com)**. It comes bundled with these 
 * [Prism.js](https://prismjs.com/)
 * [JSZip](https://stuk.github.io/jszip/)
 * [Filesaver.js](https://github.com/eligrey/FileSaver.js)
+* [opentype.js](https://github.com/opentypejs/opentype.js)
 
 These scripts are bundled directly with the repo, but can be replaced with CDN versions. It also comes bundled with **[Inter](https://fonts.google.com/specimen/Inter)** (in WOFF2 format).
 

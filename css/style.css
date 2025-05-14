@@ -25,6 +25,11 @@ body.light-mode {
     --color-ui-background: #fff;
     --color-notice-bg: #fff9db;         /* pastel yellow */
     --color-notice-border: #f7c948;     /* dandelion yellow */
+
+    --color-baseline: #1e90ff;   /* Dodger Blue */
+    --color-xheight: #2e8b57;    /* Sea Green */
+    --color-capheight: #800080;  /* Purple */
+    --color-descender: #dc143c;  /* Crimson */
 }
 
 body.dark-mode {
@@ -43,6 +48,11 @@ body.dark-mode {
     --color-ui-background: #1e1e1e;
     --color-notice-bg: #4b3f1f;         /* soft dusky yellow-brown */
     --color-notice-border: #ffcc33;     /* vibrant dark yellow */
+
+    --color-baseline: #80caff;   /* Lighter blue */
+    --color-xheight: #9ae6b4;    /* Mint green */
+    --color-capheight: #d291ff;  /* Soft lavender */
+    --color-descender: #ff6b6b;  /* Coral red */
 }
 
 /* Uses system preference */
@@ -63,6 +73,11 @@ body.dark-mode {
         --color-ui-background: #1e1e1e;
         --color-notice-bg: #4b3f1f;         /* soft dusky yellow-brown */
         --color-notice-border: #ffcc33;     /* vibrant dark yellow */
+
+        --color-baseline: #80caff;   /* Lighter blue */
+        --color-xheight: #9ae6b4;    /* Mint green */
+        --color-capheight: #d291ff;  /* Soft lavender */
+        --color-descender: #ff6b6b;  /* Coral red */
     }
 }
 
@@ -83,6 +98,11 @@ body.dark-mode {
         --color-ui-background: #fff;
         --color-notice-bg: #fff9db;         /* pastel yellow */
         --color-notice-border: #f7c948;     /* dandelion yellow */
+
+        --color-baseline: #1e90ff;   /* Dodger Blue */
+        --color-xheight: #2e8b57;    /* Sea Green */
+        --color-capheight: #800080;  /* Purple */
+        --color-descender: #dc143c;  /* Crimson */
     }
 }
 
@@ -608,7 +628,9 @@ body.light-mode #app-header .logo .show-on-light{
 }
 
 #font-preview .page-wrap.single-page{
-    padding: 2rem 1rem;
+    padding: 2rem 1.5rem;
+    width: 100%;
+    max-width: 1000px;
 }
 
 #font-preview .page-wrap.single-page .page-title{
@@ -645,6 +667,42 @@ body.light-mode #app-header .logo .show-on-light{
 
 #font-preview .page-wrap.single-page.policy-page .section-heading{
     padding: 0 0 0.75rem;
+}
+
+#svg #preview{
+    fill: var(--color-text);
+}
+
+#svg #pathBaseline{
+    stroke: var(--color-baseline);
+}
+
+#svg #labelBaselineLeft, #svg #labelBaselineRight{
+    fill: var(--color-baseline)
+}
+
+#svg #pathXheight{
+    stroke: var(--color-xheight);
+}
+
+#svg #labelXheightLeft, #svg #labelXheightRight{
+    fill: var(--color-xheight);
+}
+
+#svg #pathCapHeight{
+    stroke: var(--color-capheight);
+}
+
+#svg #labelCapHeightLeft, #svg #labelCapHeightRight{
+    fill: var(--color-capheight);
+}
+
+#svg #pathDescender{
+    stroke: var(--color-descender)
+}
+
+#svg #labelDescenderLeft, #svg #labelDescenderRight{
+    fill: var(--color-descender);
 }
 
 /* Main layout */
@@ -749,6 +807,48 @@ article.main-text, .text-one, .text-two {
     line-height: 2.5rem;
     text-align: center;
     font-size: 1.15rem;
+}
+
+#text-preview .toolbar .select-menu {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* or a fixed width if you prefer */
+    max-width: 300px;
+    font-family: var(--body-typeface);
+}
+
+#text-preview .toolbar .select-menu select {
+    width: 100%;
+    appearance: none; /* remove default OS styles */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: var(--color-bg, #fff);
+    color: #333;
+    padding: 0 2.5rem 0 1rem;
+    line-height: calc( 2.5rem - 2px );
+    font-size: 1rem;
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#text-preview .toolbar .select-menu select:focus {
+    outline: none;
+    border-color: var(--color-accent, #007acc);
+    box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2);
+}
+
+/* Add a custom dropdown arrow */
+#text-preview .toolbar .select-menu::after {
+    content: '▾';
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1rem;
+    color: #333;
 }
 
 #text-preview .toolbar .font-size .control{
@@ -919,15 +1019,56 @@ article.main-text, .text-one, .text-two {
 }
 
 .font-data .preview{
-    width: calc( 23% - 36px );
+    width: 100%;
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.font-data .preview .typeface{
+    width: 275px;
+}
+
+.font-data .preview .typeface-tech{
+    flex: 1;
+    font-family: var(--body-typeface);
+}
+
+.font-data .preview .typeface-tech .ttf-meta{
+    padding: 0 0 1.5rem;
+}
+
+.font-data .preview .typeface-tech .ttf-meta p:not(:last-of-type){
+    padding: 0 0 0.5rem;
+}
+
+.font-data .preview .typeface-tech .ttf-meta p{ 
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.font-data .preview .typeface-tech .ttf-meta .meta-data{
+    font-weight: 700;
+}
+
+.font-data .preview .typeface-tech .typography-terms{
+    padding: 1rem 0 0;
+}
+
+.font-data .preview .typeface-tech .typography-terms p{
+    font-size: 0.85rem;
+}
+
+.font-data .preview .typeface-tech .typography-terms p:not(:last-of-type){
+    padding: 0 0 0.2rem;
 }
 
 .font-data .variants{
-    width: calc( 35% - 36px );
+    width: calc( 45% - 36px );
 }
 
 .font-data .uses{
-    width: calc( 42% - 36px );
+    width: calc( 55% - 36px );
 }
 
 figure.preview {
