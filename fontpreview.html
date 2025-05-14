@@ -135,9 +135,11 @@
                 </figure>
                 <figure class="font-weight">
                     <label for="font-weight-primary">Font weight:</label>
-                    <select id="font-weight-primary" data-default="">
-                        <!-- You will populate these <option>s dynamically -->
-                    </select>
+                    <div class="select-menu">
+                        <select id="font-weight-primary" data-default="">
+                            <!-- You will populate these <option>s dynamically -->
+                        </select>
+                    </div>
                 </figure>
             </div>
 
@@ -160,9 +162,11 @@
                 </figure>
                 <figure class="font-weight">
                     <label for="font-weight-secondary">Font weight:</label>
-                    <select id="font-weight-secondary" data-default="">
-                        <!-- You will populate these <option>s dynamically -->
-                    </select>
+                    <div class="select-menu">
+                        <select id="font-weight-secondary" data-default="">
+                            <!-- You will populate these <option>s dynamically -->
+                        </select>
+                    </div>
                 </figure>
             </div>
 
@@ -301,12 +305,55 @@
 
     <aside class="font-data" id="style-guide" style="display: none;">
         <figure class="preview">
-            <p class="font-name show-fontName"></p>
-            <p class="font-cat show-fontCategory"></p>
-            <p class="font-preview">
-                <span class="preview-a">a</span>
-                <span class="preview-g">g</span>
-            </p>
+            <div class="typeface">
+                <p class="font-name show-fontName"></p>
+                <p class="font-cat show-fontCategory"></p>
+                <p class="font-preview">
+                    <span class="preview-a">a</span>
+                    <span class="preview-g">g</span>
+                </p>
+            </div>
+            <div class="typeface-tech">
+                <div class="ttf-meta">
+                    <p>Designer: <span class="meta-data designer"></span></p>
+                    <p>Designer URL: <span class="meta-data designer-url"></span></p>
+                    <p>Copyright: <span class="meta-data copyright"></span></p>
+                    <p>License: <span class="meta-data license"></span></p>
+                </div>
+                
+                <div id="sample">
+                    <svg id="svg" width="100%" height="auto">
+                        <path id="preview" fill="black" />
+
+                        <!-- Guide Lines -->
+                        <line id="pathBaseline" x1="0" x2="1200" stroke="blue" stroke-width="1" />
+                        <line id="pathXheight" x1="0" x2="1200" stroke="green" stroke-width="1" />
+                        <line id="pathCapHeight" x1="0" x2="1200" stroke="purple" stroke-width="1" />
+                        <line id="pathDescender" x1="0" x2="1200" stroke="red" stroke-width="1" stroke-dasharray="4 2" />
+
+                        <!-- Left Labels -->
+                        <text id="labelBaselineLeft" x="5" fill="blue" font-size="10px" font-family="sans-serif">Baseline</text>
+                        <text id="labelXheightLeft" x="5" fill="green" font-size="10px" font-family="sans-serif">X-Height</text>
+                        <text id="labelCapHeightLeft" x="5" fill="purple" font-size="10px" font-family="sans-serif">Cap Height</text>
+                        <text id="labelDescenderLeft" x="5" fill="red" font-size="10px" font-family="sans-serif">Descender</text>
+
+                        <!-- Right Labels -->
+                        <text id="labelBaselineRight" text-anchor="end" fill="blue" font-size="10px" font-family="'Inter', sans-serif">Baseline</text>
+                        <text id="labelXheightRight" text-anchor="end" fill="green" font-size="10px" font-family="'Inter', sans-serif">X-Height</text>
+                        <text id="labelCapHeightRight" text-anchor="end" fill="purple" font-size="10px" font-family="'Inter', sans-serif">Cap Height</text>
+                        <text id="labelDescenderRight" text-anchor="end" fill="red" font-size="10px" font-family="'Inter', sans-serif">Descender</text>
+                    </svg>
+                </div>
+
+                <div class="typography-terms">
+                    <p><strong>Baseline:</strong> The invisible line upon which most letters "sit." It serves as the foundation for aligning text across a line.</p>
+                    <p><strong>X-Height:</strong> The height of the lowercase "x" in a typeface. It represents the typical height of lowercase letters and affects readability and visual size.</p>
+                    <p><strong>Cap Height:</strong> The height of capital letters from the baseline, such as "H" or "T." It's used to align uppercase characters in a line of text.</p>
+                    <p><strong>Ascender:</strong> The portion of a lowercase letter (like "b" or "d") that rises above the x-height.</p>
+                    <p><strong>Descender:</strong> The part of a letter that falls below the baseline, such as in "y", "p", or "g."</p>
+                    <p>For more information, visit <a href="https://www.myfonts.com/pages/fontscom-learning-fontology-level-1-type-anatomy-anatomy" target="_blank">Fonts.com: The Anatomy of a Typeface</a>.</p>
+                </div>
+            </div>
         </figure>
         <figure class="variants" id="font-variants"></figure>
         <figure class="uses">
@@ -564,7 +611,10 @@
     });
 
     $(document).ready(function(){
+        let fontSrc = "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf";
+
         setTimeout(function(){
+
             var textOne = $('#text-preview .main-text .text-one'),
                 textTwo = $('#text-preview .main-text .text-two');
 
@@ -586,9 +636,12 @@
                 $('#text-preview .toolbar #preview-text-one .font-size.display').text(fontsizeOne);
                 $('#text-preview .toolbar #preview-text-two .font-size.display').text(fontsizeTwo);
 
+                getVerticalMetrics(ttfFile);
+                getFontDeveloperInfo(ttfFile);
+
                 setTimeout(function(){
                     $('#text-preview .loading').fadeOut(250);
-                }, 200);
+                }, 500);
             }, 500);
         }, 1000);
     });
