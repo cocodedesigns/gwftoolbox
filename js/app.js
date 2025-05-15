@@ -704,10 +704,16 @@ $(document).on('click', '#download-fonts', async function () {
         return;
     }
 
+    // Set .text-one (prefers 700)
+    var fontweightOne = setClosestFontWeight(700, selectedVariants);
+
+    // Set .text-two (prefers 400)
+    var fontweightTwo = setClosestFontWeight(400, selectedVariants);
+
     // Normalize variant values
     const normalizedVariants = selectedVariants.map(v => {
-        if (v === 'regular') return '400';
-        if (v === 'italic') return '400italic';
+        if (v === '400') return 'regular';
+        if (v === '400italic') return 'italic';
         return v.toLowerCase(); // e.g., '100italic'
     });
 
@@ -720,7 +726,7 @@ $(document).on('click', '#download-fonts', async function () {
     const downloadedFonts = new Set();
 
     // Iterate over selected variants and download the corresponding TTF files
-    for (const variant of selectedVariants) {
+    for (const variant of normalizedVariants) {
         const variantKey = variant.toLowerCase();
 
         // Check if this variant has a corresponding TTF file in the data
@@ -762,8 +768,12 @@ $(document).on('click', '#download-fonts', async function () {
     // Create CSS file
     zip.file('style.css', fontFaceRules.join('\n\n') + '\n');
 
+    let svgMarkup = await getVerticalMetrics(ttfFile, true);
+    let devMarkup = await getFontDeveloperInfo(ttfFile, true);
+    console.log(svgMarkup);
+
     // Generate the HTML preview file
-    const htmlPreview = `
+    var htmlPreview = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -772,6 +782,29 @@ $(document).on('click', '#download-fonts', async function () {
     <title>Preview: ${fontName}</title>
     <style>
         @import url('./style.css');
+
+        :root{
+            --color-background: #f8f9fa;
+            --color-text: #222;
+            --color-accent: #3972cf;
+            --color-metadata: #505050;
+            --color-fontbutton-hover: #f0f0f0;
+            --color-link: #1a73e8;
+            --color-link-hover: #0c58c0;
+            --color-button-bg: #e0e0e0;
+            --color-button-border: #ccc;
+            --color-button-hover: #d0d0d0;
+            --color-button-text: #333;
+            --color-ui-background: #fff;
+            --color-notice-bg: #fff9db;         /* pastel yellow */
+            --color-notice-border: #f7c948;     /* dandelion yellow */
+
+            --color-baseline: #1e90ff;   /* Dodger Blue */
+            --color-xheight: #2e8b57;    /* Sea Green */
+            --color-capheight: #800080;  /* Purple */
+            --color-descender: #dc143c;  /* Crimson */
+        }
+
         /* Base Reset & Typography */
         * { 
             margin: 0; 
@@ -781,42 +814,88 @@ $(document).on('click', '#download-fonts', async function () {
 
         html, 
         body { 
-            height: 100%; 
+            min-height: 100%; 
             font-family: '${fontName}', sans-serif;
             color: #222; 
             background: #f8f9fa; 
         }
 
         body{
-            padding: 1rem;
+            padding: 2.5rem 1rem;
         }
 
         a { 
             color: inherit; 
             text-decoration: none; 
+            color: var(--color-link);
+            transition: all .2s ease-in-out;
         }
 
         a:hover { 
             text-decoration: underline; 
+            color: var(--color-link-hover);
         }
 
         .font-data {
             display: flex;
             flex-wrap: wrap;
             gap: 54px;
-            margin-top: 3rem;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .font-data .preview{
-            width: calc( 23% - 36px );
+            width: 100%;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .font-data .preview .typeface{
+            width: 275px;
+        }
+
+        .font-data .preview .typeface-tech{
+            flex: 1;
+            font-family: var(--body-typeface);
+        }
+
+        .font-data .preview .typeface-tech .ttf-meta{
+            padding: 0 0 1.5rem;
+        }
+
+        .font-data .preview .typeface-tech .ttf-meta p:not(:last-of-type){
+            padding: 0 0 0.5rem;
+        }
+
+        .font-data .preview .typeface-tech .ttf-meta p{ 
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .font-data .preview .typeface-tech .ttf-meta .meta-data{
+            font-weight: 700;
+        }
+
+        .font-data .preview .typeface-tech .typography-terms{
+            padding: 1rem 0 0;
+        }
+
+        .font-data .preview .typeface-tech .typography-terms p{
+            font-size: 0.85rem;
+        }
+
+        .font-data .preview .typeface-tech .typography-terms p:not(:last-of-type){
+            padding: 0 0 0.2rem;
         }
 
         .font-data .variants{
-            width: calc( 35% - 36px );
+            width: calc( 45% - 36px );
         }
 
         .font-data .uses{
-            width: calc( 42% - 36px );
+            width: calc( 55% - 36px );
         }
 
         figure.preview {
@@ -827,7 +906,7 @@ $(document).on('click', '#download-fonts', async function () {
         .preview .font-name {
             font-family: var(--body-typeface); 
             font-size: 1.5rem;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0;
         }
 
@@ -872,9 +951,9 @@ $(document).on('click', '#download-fonts', async function () {
         .variants .label {
             font-family: var(--body-typeface); 
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 0.5rem;
-            color: #333;
+            color: var(--color-button-text);
             width: 125px;
         }
 
@@ -907,7 +986,7 @@ $(document).on('click', '#download-fonts', async function () {
             font-family: var(--body-typeface);
             font-size: 0.8rem;
             text-transform: uppercase;
-            color: #666;
+            color: var(--color-button-text);
             width: 120px;
         }
 
@@ -925,6 +1004,24 @@ $(document).on('click', '#download-fonts', async function () {
             line-height: 1.6;
         }
 
+        .fa-icon{
+            width: 0.9rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .fa-icon svg path{
+            fill: currentColor;
+        }
+
+        .fa-arrow-right{
+            margin: 0 0 0 0.5rem;
+        }
+
+        .fa-circle{
+            margin: 0 0.5rem 0 0;
+        }
+
         .uses .option.lead .data {
             font-size: 1.25rem;
             line-height: 1.5;
@@ -933,14 +1030,14 @@ $(document).on('click', '#download-fonts', async function () {
         .uses .option.paragraph .data {
             font-size: 1rem;
             line-height: 1.5;
-            color: #333;
+            color: var(--color-button-text);
         }
 
         .uses .option.quote .data {
             font-size: 1.15rem;
             font-style: italic;
             line-height: 1.5;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         .uses .option.link .data a {
@@ -948,14 +1045,18 @@ $(document).on('click', '#download-fonts', async function () {
             align-items: center;
             gap: 0.25rem;
             text-decoration: none;
-            color: #1a73e8;
-            font-weight: 500;
+            color: var(--color-link);
+            font-weight: 400;
             margin-right: 1rem;
+        }
+
+        .uses .option.link .dta a:hover{
+            color: var(--color-link-hover);
         }
 
         .uses .option.button .data a {
             display: inline-block;
-            border: 1px solid #222;
+            border: 1px solid var(--color-text);
             padding: 0.75rem 1.5rem;
             text-decoration: none;
             font-weight: 400;
@@ -963,39 +1064,102 @@ $(document).on('click', '#download-fonts', async function () {
         }
 
         .uses .option.button .data .option-one{
-            color: #222;
+            color: var(--color-text);
             background-color: transparent;
         }
 
         .uses .option.button .data .option-two{
-            color: #FFF;
-            background-color: #222;
+            color: var(--color-ui-background);
+            background-color: var(--color-text);
+        }
+        
+        .main-text, .text-one, .text-two {
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .fa-arrow-right, .fa-circle {
-            font-size: 0.9em;
+        .main-text {
+            padding: 3rem;
+            position: relative;
+            z-index: 2;
+            background-color: var(--color-ui-background);
+            color: var(--color-text);
+            border: solid 1px #222;
+            border-radius: 3px;
         }
 
-        .fa-arrow-right{
-            margin: 0 0 0 0.5rem;
+        .main-text .text-one {
+            font-size: 56px;
+            font-weight: ${fontweightOne};
+            margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
-        .fa-cicle{
-            margin: 0 0.5rem 0 0;
+        .main-text .text-two {
+            font-size: 36px;
+            font-weight: ${fontweightTwo};
+            line-height: 1;
+        }
+
+        .main-text span[contenteditable="true"] {
+            display: block;
+            line-height: 1.4;
+            background: none;
+            padding: 0.5rem;
+            transition: background .1s ease-in-out;
+            border-radius: 8px;
+        }
+
+        .main-text span[contenteditable="true"]:hover,
+        .main-text span[contenteditable="true"]:focus{
+            background: rgba(160, 160, 165, 0.3); /* darker on hover */
+        }
+
+        .main-text span[contenteditable="true"]:hover{
+            cursor: pointer;
+        }
+
+        .main-text span[contenteditable="true"]:focus{
+            cursor: text;
         }
     </style>
 </head>
 <body>
     <div class="font-data" id="style-guide">
         <figure class="preview">
-            <p class="font-name">${fontName}</p>
-            <p class="font-cat">${fontCategory}</p>
-            <p class="font-preview">
-                <span class="preview-a">a</span>
-                <span class="preview-g">g</span>
-            </p>
+            <div class="typeface">
+                <p class="font-name">${fontName}</p>
+                <p class="font-cat">${fontCategory}</p>
+                <p class="font-preview">
+                    <span class="preview-a">a</span>
+                    <span class="preview-g">g</span>
+                </p>
+            </div>
+            <div class="typeface-tech">
+                <div class="ttf-meta">
+                    <p>Designer: <span class="meta-data designer">${devMarkup.designerName}</span></p>
+                    <p>Designer URL: <span class="meta-data designer-url">${devMarkup.designerURL}</span></p>
+                    <p>Copyright: <span class="meta-data copyright">${devMarkup.copyright}</span></p>
+                    <p>License: <span class="meta-data license">${devMarkup.license}</span></p>
+                </div>
+                <div id="sample">
+                    ${svgMarkup}
+                </div>
+
+                <div class="typography-terms">
+                    <p><strong>Baseline:</strong> The invisible line upon which most letters "sit." It serves as the foundation for aligning text across a line.</p>
+                    <p><strong>X-Height:</strong> The height of the lowercase "x" in a typeface. It represents the typical height of lowercase letters and affects readability and visual size.</p>
+                    <p><strong>Cap Height:</strong> The height of capital letters from the baseline, such as "H" or "T." It's used to align uppercase characters in a line of text.</p>
+                    <p><strong>Ascender:</strong> The portion of a lowercase letter (like "b" or "d") that rises above the x-height.</p>
+                    <p><strong>Descender:</strong> The part of a letter that falls below the baseline, such as in "y", "p", or "g."</p>
+                    <p>For more information, visit <a href="https://www.myfonts.com/pages/fontscom-learning-fontology-level-1-type-anatomy-anatomy" target="_blank">Fonts.com: The Anatomy of a Typeface</a>.</p>
+                </div>
+            </div>
         </figure>
-        <figure class="variants">
+        <article class="main-text">
+            <p class="text-one"><span contenteditable="true" class="input-one" data-default="The chills you get when listening to music are caused by your brain releasing dopamine.">The chills you get when listening to music are caused by your brain releasing dopamine.</span></p>
+            <p class="text-two"><span contenteditable="true" class="input-two" data-default="When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.">When tunes that give you the chills, it's due to the fact that your brain reacts to the stimulation by releasing dopamine, which is a neurotransmitter that causes pleasure.</span></p>
+        </article>
+        <figure class="variants" id="font-variants">
             ${selectedVariants.map(variant => {
                 let isItalic = variant.includes('italic');
                 let weight = isItalic ? variant.replace('italic', '') : variant;
@@ -1036,15 +1200,35 @@ $(document).on('click', '#download-fonts', async function () {
             <div class="option link">
                 <p class="label">Link</p>
                 <p class="data">
-                    <a href="#link" class="option-one">Option 1 <span class="fa-solid fa-arrow-right icon"></span></a>
-                    <a href="#link" class="option-two">Option 2 <span class="fa-solid fa-arrow-right icon"></span></a>
+                    <a href="#link" class="option-one">Option 1 <span class="fa-icon fa-arrow-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
+                        </svg>
+                    </span></a>
+                    <a href="#link" class="option-two">Option 2 <span class="fa-icon fa-arrow-right">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/>
+                        </svg>
+                    </span></a>
                 </p>
             </div>
             <div class="option button">
                 <p class="label">Button</p>
                 <p class="data">
-                    <a href="#button" class="option-one"><span class="fa-regular fa-circle icon"></span> Call to action</a>
-                    <a href="#button" class="option-two"><span class="fa-regular fa-circle icon"></span> Call to action</a>
+                    <a href="#button" class="option-one"><span class="fa-icon fa-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+                        </svg>
+                    </span> Call to action</a>
+                    <a href="#button" class="option-two"><span class="fa-icon fa-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                            <path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+                        </svg>
+                    </span> Call to action</a>
                 </p>
             </div>
         </figure>
@@ -1185,16 +1369,24 @@ $(document).on('click', '#toggle-theme', function () {
 // Trigger when checkboxes change
 $(document).on('change', '#font-variant-form input[name="variants[]"]', generateFontOutput);
 
-async function getVerticalMetrics(fontSrc) {
+// Fallback method to calculate x-height and cap height if not present in OS/2
+function getXHeightFallback(font) {
+    const glyph = font.charToGlyph("x");
+    return glyph.getBoundingBox().y2; // or y2 - y1 for actual height
+}
+
+function getCapHeightFallback(font) {
+    const glyph = font.charToGlyph("H");
+    return glyph.getBoundingBox().y2;
+}
+
+async function getVerticalMetrics(fontSrc, asString = false) {
     let font = await loadFont(fontSrc);
-    let fontFamily = font.tables.name.fontFamily.en;
-
-    // font metrics
+    
     let { unitsPerEm, ascender, descender } = font;
-    let xHeight = font.tables.os2.sxHeight;
-    let capHeight = font.tables.os2.sCapHeight;
+    let xHeight = font.tables.os2.sxHeight || getXHeightFallback(font);
+    let capHeight = font.tables.os2.sCapHeight || getCapHeightFallback(font);
 
-    // font rendering scale
     let fontSize = 100;
     let scale = fontSize / unitsPerEm;
 
@@ -1203,62 +1395,70 @@ async function getVerticalMetrics(fontSrc) {
     let yCapHeight = yBaseline - capHeight * scale;
     let yDescender = yBaseline + Math.abs(descender) * scale;
 
-    // output metrics to pre tag
-    let data = {
-        fontFamily,
-        xHeight,
-        capHeight,
-        ascender,
-        descender,
-        unitsPerEm
-    };
-
-    // draw font glyph
     let yOffset = fontSize * (ascender / unitsPerEm);
     let path = font.getPath('AaBbCcHhIiJjXxYyZz', 0, yOffset, fontSize);
-
-    const labelOffset = 2;
-    const viewWidth = 1100;
-
-    preview.setAttribute('d', path.toPathData(1));
-
-    // position guide lines
-    pathBaseline.setAttribute('y1', yBaseline);
-    pathBaseline.setAttribute('y2', yBaseline);
-
-    pathXheight.setAttribute('y1', yXHeight);
-    pathXheight.setAttribute('y2', yXHeight);
-
-    pathCapHeight.setAttribute('y1', yCapHeight);
-    pathCapHeight.setAttribute('y2', yCapHeight);
-
-    pathDescender.setAttribute('y1', yDescender);
-    pathDescender.setAttribute('y2', yDescender);
-
-    // update SVG viewBox
+    let viewWidth = 1100;
     let lineHeight = (ascender + Math.abs(descender)) * scale;
-    svg.setAttribute('viewBox', [0, 0, viewWidth, lineHeight]);
 
-    // Position labels slightly above the lines
+    if (asString) {
+        // Return an SVG string
+        let svgString = `
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ${viewWidth} ${lineHeight}">
+    <path fill="black" d="${path.toPathData(1)}" />
 
-    // Set Y positions
-    labelBaselineLeft.setAttribute('y', yBaseline - labelOffset);
-    labelXheightLeft.setAttribute('y', yXHeight - labelOffset);
-    labelCapHeightLeft.setAttribute('y', yCapHeight - labelOffset);
-    labelDescenderLeft.setAttribute('y', yDescender - labelOffset);
+    <!-- Guide Lines -->
+    <line x1="0" x2="${viewWidth}" y1="${yBaseline}" y2="${yBaseline}" stroke="blue" stroke-width="1" />
+    <line x1="0" x2="${viewWidth}" y1="${yXHeight}" y2="${yXHeight}" stroke="green" stroke-width="1" />
+    <line x1="0" x2="${viewWidth}" y1="${yCapHeight}" y2="${yCapHeight}" stroke="purple" stroke-width="1" />
+    <line x1="0" x2="${viewWidth}" y1="${yDescender}" y2="${yDescender}" stroke="red" stroke-width="1" stroke-dasharray="4 2" />
 
-    labelBaselineRight.setAttribute('y', yBaseline - labelOffset);
-    labelXheightRight.setAttribute('y', yXHeight - labelOffset);
-    labelCapHeightRight.setAttribute('y', yCapHeight - labelOffset);
-    labelDescenderRight.setAttribute('y', yDescender - labelOffset);
+    <!-- Left Labels -->
+    <text x="5" y="${yBaseline - 2}" fill="blue" font-size="10px" font-family="sans-serif">Baseline</text>
+    <text x="5" y="${yXHeight - 2}" fill="green" font-size="10px" font-family="sans-serif">X-Height</text>
+    <text x="5" y="${yCapHeight - 2}" fill="purple" font-size="10px" font-family="sans-serif">Cap Height</text>
+    <text x="5" y="${yDescender - 2}" fill="red" font-size="10px" font-family="sans-serif">Descender</text>
 
-    // Set X positions for right-side labels
-    labelBaselineRight.setAttribute('x', viewWidth - 5);
-    labelXheightRight.setAttribute('x', viewWidth - 5);
-    labelCapHeightRight.setAttribute('x', viewWidth - 5);
-    labelDescenderRight.setAttribute('x', viewWidth - 5);
+    <!-- Right Labels -->
+    <text x="${viewWidth - 5}" y="${yBaseline - 2}" text-anchor="end" fill="blue" font-size="10px" font-family="'Inter', sans-serif">Baseline</text>
+    <text x="${viewWidth - 5}" y="${yXHeight - 2}" text-anchor="end" fill="green" font-size="10px" font-family="'Inter', sans-serif">X-Height</text>
+    <text x="${viewWidth - 5}" y="${yCapHeight - 2}" text-anchor="end" fill="purple" font-size="10px" font-family="'Inter', sans-serif">Cap Height</text>
+    <text x="${viewWidth - 5}" y="${yDescender - 2}" text-anchor="end" fill="red" font-size="10px" font-family="'Inter', sans-serif">Descender</text>
+</svg>`.trim();
+        return svgString;
+    } else {
+        // Render to DOM (as before)
+        preview.setAttribute('d', path.toPathData(1));
+
+        pathBaseline.setAttribute('y1', yBaseline);
+        pathBaseline.setAttribute('y2', yBaseline);
+
+        pathXheight.setAttribute('y1', yXHeight);
+        pathXheight.setAttribute('y2', yXHeight);
+
+        pathCapHeight.setAttribute('y1', yCapHeight);
+        pathCapHeight.setAttribute('y2', yCapHeight);
+
+        pathDescender.setAttribute('y1', yDescender);
+        pathDescender.setAttribute('y2', yDescender);
+
+        svg.setAttribute('viewBox', [0, 0, viewWidth, lineHeight]);
+
+        labelBaselineLeft.setAttribute('y', yBaseline - 2);
+        labelXheightLeft.setAttribute('y', yXHeight - 2);
+        labelCapHeightLeft.setAttribute('y', yCapHeight - 2);
+        labelDescenderLeft.setAttribute('y', yDescender - 2);
+
+        labelBaselineRight.setAttribute('y', yBaseline - 2);
+        labelXheightRight.setAttribute('y', yXHeight - 2);
+        labelCapHeightRight.setAttribute('y', yCapHeight - 2);
+        labelDescenderRight.setAttribute('y', yDescender - 2);
+
+        labelBaselineRight.setAttribute('x', viewWidth - 5);
+        labelXheightRight.setAttribute('x', viewWidth - 5);
+        labelCapHeightRight.setAttribute('x', viewWidth - 5);
+        labelDescenderRight.setAttribute('x', viewWidth - 5);
+    }
 }
-
 
 /**
 * opentype.js helper
@@ -1321,7 +1521,7 @@ async function loadFont(src, options = {}) {
     return font;
 }
 
-async function getFontDeveloperInfo(fontSrc) {
+async function getFontDeveloperInfo(fontSrc, asString = false) {
     // Load the font using OpenType.js
     let font = await loadFont(fontSrc);
     
@@ -1337,12 +1537,16 @@ async function getFontDeveloperInfo(fontSrc) {
         copyright: nameTable.copyright ? nameTable.copyright.en : "Not available", // Copyright info
         license: nameTable.license ? nameTable.license.en : "Not available" // License info (if available)
     };
-    
-    // Optionally, you can set the data into an HTML element
-    $('#style-guide .ttf-meta .designer').text(developerInfo.designerName);
-    $('#style-guide .ttf-meta .designer-url').text(developerInfo.designerURL);
-    $('#style-guide .ttf-meta .copyright').text(developerInfo.copyright);
-    $('#style-guide .ttf-meta .license').text(developerInfo.license);
+
+    if (asString){
+        return developerInfo;
+    } else {
+        // Optionally, you can set the data into an HTML element
+        $('#style-guide .ttf-meta .designer').text(developerInfo.designerName);
+        $('#style-guide .ttf-meta .designer-url').text(developerInfo.designerURL);
+        $('#style-guide .ttf-meta .copyright').text(developerInfo.copyright);
+        $('#style-guide .ttf-meta .license').text(developerInfo.license);
+    }
 }
 
 
