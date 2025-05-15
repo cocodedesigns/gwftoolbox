@@ -103,6 +103,7 @@
     <div id="text-preview">
         <div class="loading">
             <span class="loader"></span>
+            <span class="loading-msg"></span>
         </div>
 
         <div class="toolbar">
@@ -611,8 +612,6 @@
     });
 
     $(document).ready(function(){
-        let fontSrc = "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZhrib2Bg-4.ttf";
-
         setTimeout(function(){
 
             var textOne = $('#text-preview .main-text .text-one'),
@@ -636,13 +635,37 @@
                 $('#text-preview .toolbar #preview-text-one .font-size.display').text(fontsizeOne);
                 $('#text-preview .toolbar #preview-text-two .font-size.display').text(fontsizeTwo);
 
-                getVerticalMetrics(ttfFile);
-                getFontDeveloperInfo(ttfFile);
+                let success = true;
 
-                setTimeout(function(){
-                    $('#text-preview .loading').fadeOut(250);
-                }, 500);
+                try {
+                    getVerticalMetrics(ttfFile);
+                } catch (e) {
+                    console.error("Failed to get vertical metrics:", e);
+                    success = false;
+                }
+
+                try {
+                    getFontDeveloperInfo(ttfFile);
+                } catch (e) {
+                    console.error("Failed to get developer info:", e);
+                    success = false;
+                }
+
+                // Only fade out if both tasks succeeded
+                if (success) {
+                    setTimeout(function(){
+                        $('#text-preview .loading').fadeOut(250);
+                    }, 500);
+                }
+
             }, 500);
         }, 1000);
+
+        // Failsafe: If loading div hasn't been hidden in 7 seconds, show error
+        setTimeout(function(){
+            if ($('#text-preview .loading').is(':visible')) {
+                $('#text-preview .loading .loading-msg').text('Something went wrong. Try refreshing the page.');
+            }
+        }, 7000);
     });
 </script>
