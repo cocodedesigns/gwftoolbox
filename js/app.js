@@ -1614,6 +1614,7 @@ function displayGlyphPreview(glyph, font) {
 
     metrics.forEach(({ y, color, label }) => {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('id', `line-${label.replace(/\s+/g, '-').toLowerCase()}`);
         line.setAttribute('x1', -padding);
         line.setAttribute('x2', width + padding);
         line.setAttribute('y1', y);
@@ -1624,6 +1625,7 @@ function displayGlyphPreview(glyph, font) {
 
         // Left label
         const leftLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        leftLabel.setAttribute('id', `leftLabel-${label.replace(/\s+/g, '-').toLowerCase()}`);
         leftLabel.setAttribute('x', -padding + 5);
         leftLabel.setAttribute('y', y - 14);
         leftLabel.setAttribute('fill', color);
@@ -1634,6 +1636,7 @@ function displayGlyphPreview(glyph, font) {
 
         // Right label
         const rightLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        rightLabel.setAttribute('id', `rightLabel-${label.replace(/\s+/g, '-').toLowerCase()}`);
         rightLabel.setAttribute('x', width + padding - 5);
         rightLabel.setAttribute('y', y - 14);
         rightLabel.setAttribute('fill', color);
@@ -1672,7 +1675,6 @@ function displayGlyphPreview(glyph, font) {
     const outline = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     outline.setAttribute('d', d);
     outline.setAttribute('fill', 'black');
-    outline.setAttribute('stroke', 'black');
     svg.appendChild(outline);
 
     // On-curve / off-curve points
