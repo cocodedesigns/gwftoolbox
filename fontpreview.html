@@ -106,7 +106,7 @@
             <span class="loading-msg"></span>
         </div>
 
-        <div class="toolbar">
+        <div class="toolbar app-toolbar">
             <div class="toolbar-group background" id="preview-background">
                 <figure class="icon">
                     <i class="fa-solid fa-paint-roller"></i>
@@ -201,13 +201,76 @@
         </article>
     </div>
 
+    <a href="#" id="toggle-charmap" class="section-toggle" data-target="character-map" data-show-text="Show Character Map" data-hide-text="Hide Character Map" >
+        <i class="fa-solid fa-chevron-down"></i>
+        <span class="text-label">Show Character Map</span>
+        <span class="line"></span>
+    </a>
+
+    <section id="character-map" class="charmap" style="display: none;">
+        <div class="toolbar app-toolbar">
+            <div class="toolbar-group unicode">
+                <label for="unicodeSubset">Subset:</label>
+                <div class="select-menu">
+                    <select id="unicodeSubset"></select>
+                </div>
+            </div>
+        </div>
+        <div id="map-mainview">
+            <div id="charMap"></div>
+            <div id="glyph">
+                <div id="glyphPreview"></div>
+                <div id="glyphInfo">
+                    <ul>
+                        <li class="item">
+                            <span class="label">Name:</span>
+                            <span class="data-item name">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">Unicode:</span>
+                            <span class="data-item unicode">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">Index:</span>
+                            <span class="data-item index">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">xMin:</span>
+                            <span class="data-item xmin">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">xMax:</span>
+                            <span class="data-item xmax">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">yMin:</span>
+                            <span class="data-item ymin">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">yMax:</span>
+                            <span class="data-item ymax">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">Advance Width:</span>
+                            <span class="data-item advancewidth">&nbsp;</span>
+                        </li>
+                        <li class="item">
+                            <span class="label">Left Side Bearing:</span>
+                            <span class="data-item leftsidebearing">&nbsp;</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <a href="#" id="toggle-accessibility" class="section-toggle" data-target="font-accessibility" data-show-text="Show Accessibility Info" data-hide-text="Hide Accessibility Info" >
         <i class="fa-solid fa-chevron-down"></i>
         <span class="text-label">Show Accessibility Info</span>
         <span class="line"></span>
     </a>
 
-    <section id="font-accessibility"  style="display: none;">
+    <section id="font-accessibility" style="display: none;">
         <div class="primary-tests test-results" id="primary">
             <div class="swatches">
                 <figure class="foreground">
@@ -651,6 +714,19 @@
                     success = false;
                 }
 
+                try {
+                    opentype.load(ttfFile, function(err, font) {
+                        if (err) {
+                            console.error('Font could not be loaded:', err);
+                        } else {
+                            generateCharacterMapFromFont(font, document.getElementById('charMap'));
+                        }
+                    });
+                } catch (e){
+                    console.error("Failed to generate charMap", e);
+                    success = false;
+                }
+
                 // Only fade out if both tasks succeeded
                 if (success) {
                     setTimeout(function(){
@@ -667,5 +743,20 @@
                 $('#text-preview .loading .loading-msg').text('Something went wrong. Try refreshing the page.');
             }
         }, 7000);
+    });
+
+    document.getElementById('unicodeSubset').addEventListener('change', () => {
+        var subset = document.getElementById('unicodeSubset').value;
+        var range = unicodeSubsetMap[subset];
+        
+        opentype.load(ttfFile, function(err, font) {
+            if (err) {
+                console.error('Font could not be loaded:', err);
+            } else {
+                if (font && range) {
+                    generateCharacterMapFromFont(font, document.getElementById('charMap'), range);
+                }
+            }
+        });
     });
 </script>
