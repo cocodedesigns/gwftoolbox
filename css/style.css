@@ -1350,6 +1350,7 @@ figure.uses {
 #character-map #map-mainview #glyph .glyph-toggles{
     display: flex;
     padding: 0.75rem 0;
+    font-family: var(--body-typeface);
 }
 
 #character-map #map-mainview #glyph .glyph-toggles a{
@@ -1577,26 +1578,28 @@ figure.uses {
     margin: 1.5rem 0;
 }
 
-.download-note {
+.download-note, .notice{
     font-size: 0.875rem;
     color: var(--color-text);
     background-color: var(--color-notice-bg);
     border-left: solid 6px var(--color-notice-border);
     padding: 0.75rem 1.25rem;
     line-height: 1.5;
+    font-family: var(--body-typeface);
 }
 
-.download-note i{
+.download-note i, .notice i{
     display: block;
     float: left;
     font-size: 1.3rem;
     padding: 0.35rem 0.75rem 0.75rem 0;
 }
-.download-note a {
+.download-note a, .notice a{
     color: var(--color-link);
     text-decoration: underline;
 }
-.download-note a:hover {
+
+.download-note a:hover, .notice a:hover{
     color: var(--color-link-hover);
     text-decoration: none;
 }
@@ -1661,6 +1664,10 @@ input[type="checkbox"]:checked + .toggle::before {
 
 input[type="checkbox"]:checked + .toggle::after {
   background: #4CAF50;
+}
+
+#font-preview .font-preview-area{
+    padding: 2rem 1.5rem;
 }
 
 .font-preview-area .back-link{
@@ -1758,6 +1765,25 @@ input[type="checkbox"]:checked + .toggle::after {
 
 /* Contrast Tests */
 #font-accessibility{
+    padding: 2rem 0;
+}
+#font-accessibility .intro-text{
+    padding: 0 0.5rem 2rem;
+}
+
+#font-accessibility .intro-text p, #font-accessibility .intro-text li{
+    font-family: var(--body-typeface);
+    font-size: 1rem;
+    padding: 0 0 0.5rem;
+}
+
+#font-accessibility .intro-text ul{
+    margin: 0 0 0 2rem;
+    padding: 0 0 1rem;
+    list-style: disc;
+}
+
+#font-accessibility .wcag-tests{
     display: flex;
     gap: 30px;
     flex-wrap: wrap;
@@ -1904,6 +1930,7 @@ input[type="checkbox"]:checked + .toggle::after {
     display: inline-block;
     position: relative;
 }
+
 #text-preview .loading .loader::after,
 #text-preview .loading .loader::before {
     content: '';  
@@ -1917,6 +1944,7 @@ input[type="checkbox"]:checked + .toggle::after {
     top: 0;
     animation: animloader 2s linear infinite;
 }
+
 #text-preview .loading .loader::after {
     animation-delay: 1s;
 }
