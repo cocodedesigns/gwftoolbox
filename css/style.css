@@ -1291,18 +1291,24 @@ figure.uses {
 
 #character-map #map-mainview{
     display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
     background-color: var(--color-ui-background);
 }
 
-#character-map #map-mainview .character-map {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-    grid-template-rows: repeat(auto-fill, minmax(64px, 1fr));
-    padding: 10px;
-    border-radius: 8px;
+#character-map #map-mainview .character-map{
     flex: 1;
-    gap: 0.5rem;
+    height: 550px;
+    padding: 1rem;
+    overflow: auto;
+}
+
+#character-map #map-mainview #charmap {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 64px);
+    grid-template-rows: repeat(auto-fill, 64px);
+    border-radius: 8px;
+    gap: 0.75rem;
 }
 
 #character-map #map-mainview .glyph-box {
@@ -1317,19 +1323,57 @@ figure.uses {
     transition: all .2s ease;
 }
 
-#character-map #map-mainview .glyph-box:hover{
+#character-map #map-mainview .glyph-box:hover, #character-map #map-mainview .glyph-box.selected{
     background-color: rgba(0, 0, 0, .1);
 }
 
 #character-map #map-mainview #glyph{
-    width: 500px;
-    border-left: solid 1px #CCC;
-    padding: 1rem;
+    border-left: solid 1px;
+    overflow: hidden;
 }
 
-#character-map #map-mainview #glyph #glyphPreview{
-    min-height: 400px;
-    padding: 0 0 1rem;
+#character-map #map-mainview #glyph .glyph-controls{
+    padding: 1rem 1.5rem;
+    width: 500px;
+}
+
+#character-map #map-mainview #glyph.closed{
+    width: 0;
+    border-left-color: transparent;
+}
+
+#character-map #map-mainview #glyph.open{
+    width: 500px;
+    border-left-color: #CCC;
+}
+
+#character-map #map-mainview #glyph .glyph-toggles{
+    display: flex;
+    padding: 0.75rem 0;
+}
+
+#character-map #map-mainview #glyph .glyph-toggles a{
+    width: 50%;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    transition: all .2s ease-in-out;
+    color: var(--color-text);
+    border-radius: 2px;
+}
+
+#character-map #map-mainview #glyph .glyph-toggles a:hover{
+    background-color: rgba(0,0,0,.1);
+}
+
+#character-map #map-mainview #glyph .glyph-toggles a.selected{
+    background-color: rgba(0,0,0,.25);
+}
+
+#character-map #map-mainview #glyph .tab{
+    display: none;
+    padding: 1rem 0 0;
 }
 
 #character-map #map-mainview #glyph #glyphPreview svg{
@@ -1354,12 +1398,15 @@ figure.uses {
 
 #character-map #map-mainview #glyph #glyphInfo .item .label{
     border-color: transparent;
-    padding: 0.5rem 0.75rem 0.5rem 0;
+    padding: 0 0.75rem 0 0;
+    line-height: 35px;
     width: 180px;
 }
 
 #character-map #map-mainview #glyph #glyphInfo .item .data-item{
-    padding: 0.5rem 0.75rem;
+    padding: 0 0.75rem;
+    line-height: 35px;
+    height: 35px;
     border-radius: 4px;
     border-color: #CCC;
     background-color: var(--color-background);

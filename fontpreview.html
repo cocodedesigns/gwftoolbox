@@ -208,57 +208,57 @@
     </a>
 
     <section id="character-map" class="charmap" style="display: none;">
-        <div class="toolbar app-toolbar">
-            <div class="toolbar-group unicode">
-                <label for="unicodeSubset">Subset:</label>
-                <div class="select-menu">
-                    <select id="unicodeSubset"></select>
-                </div>
-            </div>
-        </div>
         <div id="map-mainview">
-            <div id="charMap"></div>
-            <div id="glyph">
-                <div id="glyphPreview"></div>
-                <div id="glyphInfo">
-                    <ul>
-                        <li class="item">
-                            <span class="label">Name:</span>
-                            <span class="data-item name">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">Unicode:</span>
-                            <span class="data-item unicode">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">Index:</span>
-                            <span class="data-item index">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">xMin:</span>
-                            <span class="data-item xmin">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">xMax:</span>
-                            <span class="data-item xmax">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">yMin:</span>
-                            <span class="data-item ymin">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">yMax:</span>
-                            <span class="data-item ymax">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">Advance Width:</span>
-                            <span class="data-item advancewidth">&nbsp;</span>
-                        </li>
-                        <li class="item">
-                            <span class="label">Left Side Bearing:</span>
-                            <span class="data-item leftsidebearing">&nbsp;</span>
-                        </li>
-                    </ul>
+            <div class="character-map">
+                <div id="charmap"></div>
+            </div>
+            <div id="glyph" class="closed">
+                <div class="glyph-controls">
+                    <div class="glyph-toggles">
+                        <a href="#glyphPreview" id="toggle-glyphPreview" class="selected">Glyph</a>
+                        <a href="#glyphInfo" id="toggle-glyphInfo">Tech Info</a>
+                    </div>
+                    <div id="glyphPreview" class="tab selected"></div>
+                    <div id="glyphInfo" class="tab">
+                        <ul>
+                            <li class="item">
+                                <span class="label">Name:</span>
+                                <span class="data-item name">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">Unicode:</span>
+                                <span class="data-item unicode">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">Index:</span>
+                                <span class="data-item index">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">xMin:</span>
+                                <span class="data-item xmin">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">xMax:</span>
+                                <span class="data-item xmax">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">yMin:</span>
+                                <span class="data-item ymin">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">yMax:</span>
+                                <span class="data-item ymax">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">Advance Width:</span>
+                                <span class="data-item advancewidth">&nbsp;</span>
+                            </li>
+                            <li class="item">
+                                <span class="label">Left Side Bearing:</span>
+                                <span class="data-item leftsidebearing">&nbsp;</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -715,13 +715,7 @@
                 }
 
                 try {
-                    opentype.load(ttfFile, function(err, font) {
-                        if (err) {
-                            console.error('Font could not be loaded:', err);
-                        } else {
-                            generateCharacterMapFromFont(font, document.getElementById('charMap'));
-                        }
-                    });
+                    loadDefaultFont(ttfFile);
                 } catch (e){
                     console.error("Failed to generate charMap", e);
                     success = false;
@@ -744,19 +738,6 @@
             }
         }, 7000);
     });
-
-    document.getElementById('unicodeSubset').addEventListener('change', () => {
-        var subset = document.getElementById('unicodeSubset').value;
-        var range = unicodeSubsetMap[subset];
-        
-        opentype.load(ttfFile, function(err, font) {
-            if (err) {
-                console.error('Font could not be loaded:', err);
-            } else {
-                if (font && range) {
-                    generateCharacterMapFromFont(font, document.getElementById('charMap'), range);
-                }
-            }
-        });
-    });
 </script>
+<script src="/js/fontkit.min.js"></script>
+<script src="/js/glytter.js"></script>
