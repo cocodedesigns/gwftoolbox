@@ -755,11 +755,11 @@ body.light-mode #app-header .logo .show-on-light{
     fill: var(--color-descender);
 }
 
-#svg #pathDescender, #glyphPreview #line-ascender{
+#svg #pathAscender, #glyphPreview #line-ascender{
     stroke: var(--color-ascender)
 }
 
-#svg #labelDescenderLeft, #svg #labelDescenderRight, #glyphPreview #leftLabel-ascender, #glyphPreview #rightLabel-ascender{
+#svg #labelAscenderLeft, #svg #labelAscenderRight, #glyphPreview #leftLabel-ascender, #glyphPreview #rightLabel-ascender{
     fill: var(--color-ascender);
 }
 
