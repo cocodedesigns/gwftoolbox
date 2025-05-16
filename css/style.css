@@ -71,6 +71,7 @@ body.light-mode {
     --color-xheight: #2e8b57;    /* Sea Green */
     --color-capheight: #800080;  /* Purple */
     --color-descender: #dc143c;  /* Crimson */
+    --color-ascender: #999;
 }
 
 body.dark-mode {
@@ -94,6 +95,7 @@ body.dark-mode {
     --color-xheight: #9ae6b4;    /* Mint green */
     --color-capheight: #d291ff;  /* Soft lavender */
     --color-descender: #ff6b6b;  /* Coral red */
+    --color-ascender: #c2c2c2;
 }
 
 /* Uses system preference */
@@ -119,6 +121,7 @@ body.dark-mode {
         --color-xheight: #9ae6b4;    /* Mint green */
         --color-capheight: #d291ff;  /* Soft lavender */
         --color-descender: #ff6b6b;  /* Coral red */
+        --color-ascender: #c2c2c2;
     }
 }
 
@@ -144,6 +147,7 @@ body.dark-mode {
         --color-xheight: #2e8b57;    /* Sea Green */
         --color-capheight: #800080;  /* Purple */
         --color-descender: #dc143c;  /* Crimson */
+        --color-ascender: #999;
     }
 }
 
@@ -715,40 +719,48 @@ body.light-mode #app-header .logo .show-on-light{
     padding: 0 0 0.75rem;
 }
 
-#svg #preview{
+#svg #preview, #glyphPreview svg path{
     fill: var(--color-text);
 }
 
-#svg #pathBaseline{
+#svg #pathBaseline, #glyphPreview #line-baseline{
     stroke: var(--color-baseline);
 }
 
-#svg #labelBaselineLeft, #svg #labelBaselineRight{
+#svg #labelBaselineLeft, #svg #labelBaselineRight, #glyphPreview #leftLabel-baseline, #glyphPreview #rightLabel-baseline{
     fill: var(--color-baseline)
 }
 
-#svg #pathXheight{
+#svg #pathXheight, #glyphPreview #line-x-height{
     stroke: var(--color-xheight);
 }
 
-#svg #labelXheightLeft, #svg #labelXheightRight{
+#svg #labelXheightLeft, #svg #labelXheightRight, #glyphPreview #leftLabel-x-height, #glyphPreview #rightLabel-x-height{
     fill: var(--color-xheight);
 }
 
-#svg #pathCapHeight{
+#svg #pathCapHeight, #glyphPreview #line-cap-height{
     stroke: var(--color-capheight);
 }
 
-#svg #labelCapHeightLeft, #svg #labelCapHeightRight{
+#svg #labelCapHeightLeft, #svg #labelCapHeightRight, #glyphPreview #leftLabel-cap-height, #glyphPreview #rightLabel-cap-height{
     fill: var(--color-capheight);
 }
 
-#svg #pathDescender{
+#svg #pathDescender, #glyphPreview #line-descender{
     stroke: var(--color-descender)
 }
 
-#svg #labelDescenderLeft, #svg #labelDescenderRight{
+#svg #labelDescenderLeft, #svg #labelDescenderRight, #glyphPreview #leftLabel-descender, #glyphPreview #rightLabel-descender{
     fill: var(--color-descender);
+}
+
+#svg #pathDescender, #glyphPreview #line-ascender{
+    stroke: var(--color-ascender)
+}
+
+#svg #labelDescenderLeft, #svg #labelDescenderRight, #glyphPreview #leftLabel-ascender, #glyphPreview #rightLabel-ascender{
+    fill: var(--color-ascender);
 }
 
 /* Main layout */
