@@ -824,9 +824,7 @@ article.main-text, .text-one, .text-two {
     margin-bottom: 5rem;
 }
 
-#text-preview .toolbar { /*
-	position: absolute;
-    top: -80px; */
+.app-toolbar.toolbar {
 	background: var(--color-ui-background);
 	border-bottom: 1px solid var(--color-button-hover);
 	z-index: 1;
@@ -835,11 +833,11 @@ article.main-text, .text-one, .text-two {
     font-family: var(--body-typeface);
 }
 
-#text-preview .toolbar .toolbar-group:not(:first-of-type){
+.app-toolbar.toolbar .toolbar-group:not(:first-of-type){
     border-left: solid 1px var(--color-button-hover);
 }
 
-#text-preview .toolbar .toolbar-group{
+.app-toolbar.toolbar .toolbar-group{
     display: flex;
     flex-wrap: wrap;
     padding: 0.5rem 0.75rem;
@@ -847,7 +845,7 @@ article.main-text, .text-one, .text-two {
     position: relative;
 }
 
-#text-preview .toolbar .toolbar-group .icon{ 
+.app-toolbar.toolbar .toolbar-group .icon{ 
     width: 2.5rem;
     height: 2.5rem;
     line-height: 2.5rem;
@@ -855,7 +853,7 @@ article.main-text, .text-one, .text-two {
     font-size: 1.15rem;
 }
 
-#text-preview .toolbar .select-menu {
+.app-toolbar.toolbar .select-menu {
     position: relative;
     display: inline-block;
     width: 100%; /* or a fixed width if you prefer */
@@ -863,7 +861,7 @@ article.main-text, .text-one, .text-two {
     font-family: var(--body-typeface);
 }
 
-#text-preview .toolbar .select-menu select {
+.app-toolbar.toolbar .select-menu select {
     width: 100%;
     appearance: none; /* remove default OS styles */
     -webkit-appearance: none;
@@ -879,14 +877,14 @@ article.main-text, .text-one, .text-two {
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-#text-preview .toolbar .select-menu select:focus {
+.app-toolbar.toolbar .select-menu select:focus {
     outline: none;
     border-color: var(--color-accent, #007acc);
     box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.2);
 }
 
 /* Add a custom dropdown arrow */
-#text-preview .toolbar .select-menu::after {
+.app-toolbar.toolbar .select-menu::after {
     content: '▾';
     position: absolute;
     top: 50%;
@@ -897,11 +895,11 @@ article.main-text, .text-one, .text-two {
     color: #333;
 }
 
-#text-preview .toolbar .font-size .control{
+.app-toolbar.toolbar .font-size .control{
     position: relative;
 }
 
-#text-preview .toolbar .font-size .control .display{
+.app-toolbar.toolbar .font-size .control .display{
     display: block;
     line-height: 2.5rem;
     padding: 0 0.75rem;
@@ -913,11 +911,11 @@ article.main-text, .text-one, .text-two {
     transition: all .2s ease-in-out;
 }
 
-#text-preview .toolbar .font-size .control:hover .display{
+.app-toolbar.toolbar .font-size .control:hover .display{
     background-color: rgba(160, 160, 165, 0.3);
 }
 
-#text-preview .toolbar .font-size .control::after {
+.app-toolbar.toolbar .font-size .control::after {
     content: "";
     position: absolute;
     bottom: -0.5rem; /* match your gap */
@@ -927,7 +925,7 @@ article.main-text, .text-one, .text-two {
     pointer-events: auto; /* capture hover */
 }
 
-#text-preview .toolbar .font-size .control .field{
+.app-toolbar.toolbar .font-size .control .field{
     position: absolute;
     top: 3rem;
     left: -0.375rem;
@@ -938,15 +936,15 @@ article.main-text, .text-one, .text-two {
     display: none;
 }
 
-#text-preview .toolbar .font-size:hover .control .field{
+.app-toolbar.toolbar .font-size:hover .control .field{
     display: block;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn{
+.app-toolbar.toolbar .toolbar-group.reset-btn{
     margin: 0 0 0 auto;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .toolbar-btn{
+.app-toolbar.toolbar .toolbar-group.reset-btn .toolbar-btn{
     width: 2.5rem;
     height: 2.5rem;
     text-align: center;
@@ -959,15 +957,15 @@ article.main-text, .text-one, .text-two {
     color: var(--color-text);
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn:hover .toolbar-btn{
+.app-toolbar.toolbar .toolbar-group.reset-btn:hover .toolbar-btn{
     background-color: rgba(160, 160, 165, 0.3);
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .toolbar-btn .label{
+.app-toolbar.toolbar .toolbar-group.reset-btn .toolbar-btn .label{
     display: none;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu{
     position: absolute;
     top: 3.5rem;
     right: 0;
@@ -978,15 +976,15 @@ article.main-text, .text-one, .text-two {
     display: none;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn:hover .reset-menu{
+.app-toolbar.toolbar .toolbar-group.reset-btn:hover .reset-menu{
     display: block;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu ul{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu ul{
     list-style: none;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu a{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu a{
     display: block;
     white-space: nowrap;
     color: var(--color-text);
@@ -994,17 +992,17 @@ article.main-text, .text-one, .text-two {
     transition: all .2s ease;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu a:hover{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu a:hover{
     background-color: rgba(160, 160, 165, 0.3);
     text-decoration: none;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu a > *{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu a > *{
     display: inline-block;
     vertical-align: middle;
 }
 
-#text-preview .toolbar .toolbar-group.reset-btn .reset-menu a i{
+.app-toolbar.toolbar .toolbar-group.reset-btn .reset-menu a i{
     width: 1.35rem;
     height: 1.35rem;
     line-height: 1.35rem;
@@ -1012,7 +1010,7 @@ article.main-text, .text-one, .text-two {
     margin: 0 0.25rem 0 0;
 }
 
-#text-preview .toolbar label {
+.app-toolbar.toolbar label {
     display: none;
 }
 
@@ -1284,6 +1282,89 @@ figure.uses {
 
 .fa-circle{
     margin: 0 0.5rem 0 0;
+}
+
+#character-map{
+    margin: 1rem 0 2rem;
+    border: 1px solid #ccc;
+}
+
+#character-map #map-mainview{
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--color-ui-background);
+}
+
+#character-map #map-mainview .character-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(64px, 1fr));
+    padding: 10px;
+    border-radius: 8px;
+    flex: 1;
+    gap: 0.5rem;
+}
+
+#character-map #map-mainview .glyph-box {
+    font-size: 2rem;
+    line-height: 64px;
+    height: 64px;
+    width: 64px;
+    text-align: center;
+    border-radius: 4px;
+    border: solid 1px #CCC;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+#character-map #map-mainview .glyph-box:hover{
+    background-color: rgba(0, 0, 0, .1);
+}
+
+#character-map #map-mainview #glyph{
+    width: 500px;
+    border-left: solid 1px #CCC;
+    padding: 1rem;
+}
+
+#character-map #map-mainview #glyph #glyphPreview{
+    min-height: 400px;
+    padding: 0 0 1rem;
+}
+
+#character-map #map-mainview #glyph #glyphPreview svg{
+    vertical-align: bottom;
+}
+
+#character-map #map-mainview #glyph #glyphInfo ul{
+    list-style: none;
+    font-family: var(--body-typeface);
+}
+
+#character-map #map-mainview #glyph #glyphInfo .item{
+    padding: 0 0 0.35rem;
+    font-size: 0.9rem;
+}
+
+#character-map #map-mainview #glyph #glyphInfo .item span{
+    display: inline-block;
+    vertical-align: middle;
+    border: solid 1px;
+}
+
+#character-map #map-mainview #glyph #glyphInfo .item .label{
+    border-color: transparent;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+    width: 180px;
+}
+
+#character-map #map-mainview #glyph #glyphInfo .item .data-item{
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    border-color: #CCC;
+    background-color: var(--color-background);
+    font-weight: 700;
+    width: calc( 100% - 185px );
 }
 
 #code-modal {

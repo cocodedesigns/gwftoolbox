@@ -343,8 +343,19 @@ function fetchFontsData() {
                     </div>
                 `;
 
+                var subsetOption = `
+                    <option value="${subset}">${subsetLabel}</option>
+                `;
+
                 $('#font-subsets-toggle').append(subsetHTML);
+
+                $('#unicodeSubset').append(subsetOption);
             });
+
+            // Default to Latin if available
+            if (fontSubsets.includes('latin')) {
+                $('#unicodeSubset').val('latin');
+            }
 
             var dateObj = new Date(lastUpdated);
     
@@ -1459,6 +1470,255 @@ async function getVerticalMetrics(fontSrc, asString = false) {
         labelDescenderRight.setAttribute('x', viewWidth - 5);
     }
 }
+
+// 1. Mapping Google Fonts subsets to Unicode ranges
+const unicodeSubsetMap = {
+    latin: [0x0020, 0x007F],
+    'latin-ext': [0x0100, 0x024F],
+    greek: [0x0370, 0x03FF],
+    'greek-ext': [0x1F00, 0x1FFF],
+    cyrillic: [0x0400, 0x04FF],
+    'cyrillic-ext': [0x0500, 0x052F],
+    vietnamese: [0x0102, 0x1EF9],
+    arabic: [0x0600, 0x06FF],
+    hebrew: [0x0590, 0x05FF],
+    devanagari: [0x0900, 0x097F],
+    thai: [0x0E00, 0x0E7F],
+    bengali: [0x0980, 0x09FF],
+    tamil: [0x0B80, 0x0BFF],
+    telugu: [0x0C00, 0x0C7F],
+    malayalam: [0x0D00, 0x0D7F],
+    kannada: [0x0C80, 0x0CFF],
+    gujarati: [0x0A80, 0x0AFF],
+    gurmukhi: [0x0A00, 0x0A7F],
+    sinhala: [0x0D80, 0x0DFF],
+    khmer: [0x1780, 0x17FF],
+    'vietnamese': [0x0102, 0x1EF9],
+};
+
+function generateCharacterMapFromFont(font, containerElement, unicodeRange = [32, 126]) {
+    const fontClass = `custom-font-${Date.now()}`;
+
+    // Inject @font-face style if not already present (optional)
+    const style = document.createElement('style');
+    style.textContent = `
+        @font-face {
+            font-family: '${fontClass}';
+            src: url('${URL.createObjectURL(new Blob([font.toArrayBuffer()], { type: 'font/ttf' }))}');
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Clear previous content
+    containerElement.innerHTML = '';
+
+    // Add container class for styling (optional)
+    containerElement.classList.add('character-map');
+
+    // Generate glyph boxes
+    for (let code = unicodeRange[0]; code <= unicodeRange[1]; code++) {
+        const glyph = font.charToGlyph(String.fromCharCode(code));
+        if (!glyph) continue;
+
+        const char = String.fromCharCode(code);
+        const box = document.createElement('div');
+        box.textContent = char;
+        box.title = `U+${code.toString(16).toUpperCase()}`;
+        box.classList.add('glyph-box', fontClass); // for custom font & styling
+
+        containerElement.appendChild(box);
+
+        box.addEventListener('click', () => handleGlyphClick(char, font));
+    }
+}
+
+function handleGlyphClick(char, font) {
+    const glyph = font.charToGlyph(char);
+    if (!glyph) return;
+
+    const glyphInfo = {
+        name: glyph.name,
+        unicode: glyph.unicode ? glyph.unicode.toString(16).toUpperCase().padStart(4, '0') : 'N/A',
+        index: glyph.index,
+        xMin: glyph.xMin,
+        xMax: glyph.xMax,
+        yMin: glyph.yMin,
+        yMax: glyph.yMax,
+        advanceWidth: glyph.advanceWidth,
+        leftSideBearing: glyph.leftSideBearing
+    };
+
+    displayGlyphPreview(glyph, font);
+    displayGlyphInfo(glyphInfo);
+}
+
+function displayGlyphPreview(glyph, font) {
+    const container = document.getElementById('glyphPreview');
+    container.innerHTML = '';
+
+    const unitsPerEm = font.unitsPerEm;
+    const scale = 1000 / unitsPerEm;
+
+    const xHeight = font.tables.os2?.sxHeight ?? font.tables.hhea.ascender * 0.5;
+    const capHeight = font.tables.os2?.sCapHeight ?? font.tables.hhea.ascender;
+    const ascender = font.ascender;
+    const descender = font.descender;
+
+    const padding = 350;
+    const scaledAdvanceWidth = glyph.advanceWidth * scale;
+    const width = Math.max(scaledAdvanceWidth, 600);
+    const height = (ascender - descender) * scale;
+
+    const svgWidth = width + padding * 2;
+    const svgHeight = height + padding * 2;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', '100%'); // display size (can change)
+    svg.setAttribute('height', '400');
+    svg.setAttribute('viewBox', `${-padding} ${-ascender * scale - padding} ${svgWidth} ${svgHeight}`);
+
+    // Grid lines
+    const gridSpacing = 100;
+    for (let x = -padding; x <= width + padding; x += gridSpacing) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('x2', x);
+        line.setAttribute('y1', -ascender * scale - padding);
+        line.setAttribute('y2', -descender * scale + padding);
+        line.setAttribute('stroke', '#eee');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+    }
+    for (let y = -ascender * scale - padding; y <= -descender * scale + padding; y += gridSpacing) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', -padding);
+        line.setAttribute('x2', width + padding);
+        line.setAttribute('y1', y);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#eee');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+    }
+
+    // Metrics
+    const metrics = [
+        { y: 0, color: 'blue', label: 'Baseline' },
+        { y: -xHeight * scale, color: 'green', label: 'x-height' },
+        { y: -capHeight * scale, color: 'purple', label: 'Cap Height' },
+        { y: -ascender * scale, color: '#999', label: 'Ascender' },
+        { y: -descender * scale, color: 'red', label: 'Descender' }
+    ];
+
+    metrics.forEach(({ y, color, label }) => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', -padding);
+        line.setAttribute('x2', width + padding);
+        line.setAttribute('y1', y);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', color);
+        line.setAttribute('stroke-width', '3.5');
+        svg.appendChild(line);
+
+        // Left label
+        const leftLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        leftLabel.setAttribute('x', -padding + 5);
+        leftLabel.setAttribute('y', y - 4);
+        leftLabel.setAttribute('fill', color);
+        leftLabel.setAttribute('font-size', '64');
+        leftLabel.setAttribute('font-family', 'sans-serif');
+        leftLabel.textContent = label;
+        svg.appendChild(leftLabel);
+
+        // Right label
+        const rightLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        rightLabel.setAttribute('x', width + padding - 5);
+        rightLabel.setAttribute('y', y - 4);
+        rightLabel.setAttribute('fill', color);
+        rightLabel.setAttribute('font-size', '64');
+        rightLabel.setAttribute('font-family', 'sans-serif');
+        rightLabel.setAttribute('text-anchor', 'end');
+        rightLabel.textContent = label;
+        svg.appendChild(rightLabel);
+    });
+
+    // Advance width markers (dashed verticals at 0 and advance width)
+    [0, scaledAdvanceWidth].forEach((xPos, i) => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', xPos);
+        line.setAttribute('x2', xPos);
+        line.setAttribute('y1', -ascender * scale - padding);
+        line.setAttribute('y2', -descender * scale + padding);
+        line.setAttribute('stroke', '#999');
+        line.setAttribute('stroke-dasharray', '4,2');
+        line.setAttribute('stroke-width', '1');
+        svg.appendChild(line);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', xPos + 4);
+        text.setAttribute('y', 40); // readable position above baseline
+        text.setAttribute('fill', '#555');
+        text.setAttribute('font-size', '28');
+        text.setAttribute('font-family', 'monospace');
+        text.textContent = i === 0 ? '0' : `${Math.round(glyph.advanceWidth)}`;
+        svg.appendChild(text);
+    });
+
+    // Glyph path
+    const path = glyph.getPath(0, 0, 1000); // base units
+    const d = path.toPathData(3);
+    const outline = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    outline.setAttribute('d', d);
+    outline.setAttribute('fill', 'black');
+    outline.setAttribute('stroke', 'black');
+    svg.appendChild(outline);
+
+    // On-curve / off-curve points
+    path.commands.forEach(cmd => {
+        let points = [];
+        switch (cmd.type) {
+            case 'M':
+            case 'L':
+                points.push({ x: cmd.x, y: cmd.y, onCurve: true });
+                break;
+            case 'Q':
+                points.push({ x: cmd.x1, y: cmd.y1, onCurve: false });
+                points.push({ x: cmd.x, y: cmd.y, onCurve: true });
+                break;
+            case 'C':
+                points.push({ x: cmd.x1, y: cmd.y1, onCurve: false });
+                points.push({ x: cmd.x2, y: cmd.x2, onCurve: false });
+                points.push({ x: cmd.x, y: cmd.y, onCurve: true });
+                break;
+        }
+
+        points.forEach(pt => {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', pt.x);
+            circle.setAttribute('cy', pt.y);
+            circle.setAttribute('r', 10);
+            circle.setAttribute('fill', pt.onCurve ? '#0c0' : '#c00');
+            circle.setAttribute('stroke', '#000');
+            circle.setAttribute('stroke-width', '1');
+            svg.appendChild(circle);
+        });
+    });
+
+    container.appendChild(svg);
+}
+
+function displayGlyphInfo(info) {
+    $('#character-map #glyphInfo .data-item.name').text(info.name);
+    $('#character-map #glyphInfo .data-item.unicode').text(info.unicode);
+    $('#character-map #glyphInfo .data-item.index').text(info.index);
+    $('#character-map #glyphInfo .data-item.xmin').text(info.xMin);
+    $('#character-map #glyphInfo .data-item.xmax').text(info.xMax);
+    $('#character-map #glyphInfo .data-item.ymin').text(info.yMin);
+    $('#character-map #glyphInfo .data-item.ymax').text(info.yMax);
+    $('#character-map #glyphInfo .data-item.advancewidth').text(info.advanceWidth);
+    $('#character-map #glyphInfo .data-item.leftsidebearing').text(info.leftSideBearing);
+}
+
+
 
 /**
 * opentype.js helper
