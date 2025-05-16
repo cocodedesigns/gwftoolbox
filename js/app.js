@@ -343,19 +343,8 @@ function fetchFontsData() {
                     </div>
                 `;
 
-                var subsetOption = `
-                    <option value="${subset}">${subsetLabel}</option>
-                `;
-
                 $('#font-subsets-toggle').append(subsetHTML);
-
-                $('#unicodeSubset').append(subsetOption);
             });
-
-            // Default to Latin if available
-            if (fontSubsets.includes('latin')) {
-                $('#unicodeSubset').val('latin');
-            }
 
             var dateObj = new Date(lastUpdated);
     
@@ -688,6 +677,23 @@ $(document).on('click', '#code-modal .tab-button', function (e) {
     $('#code-content')
         .removeClass()
         .addClass(target.replace('#', ''));
+});
+
+$(document).on('click', '#glyph .glyph-toggles a', function (e) {
+    e.preventDefault();
+
+    const target = $(this).attr('href');
+    const $targetContent = $(target);
+    const $activeContent = $('#glyph .tab.selected');
+
+    if ($targetContent.is($activeContent)) return;
+
+    $activeContent.removeClass('selected').fadeOut(200, function () {
+        $targetContent.fadeIn(200).addClass('selected');
+    });
+
+    $('#glyph .glyph-toggles a').removeClass('selected');
+    $(this).addClass('selected');
 });
 
 $(document).on('click', '#download-fonts', async function () {
@@ -1471,70 +1477,45 @@ async function getVerticalMetrics(fontSrc, asString = false) {
     }
 }
 
-// 1. Mapping Google Fonts subsets to Unicode ranges
-const unicodeSubsetMap = {
-    latin: [0x0020, 0x007F],
-    'latin-ext': [0x0100, 0x024F],
-    greek: [0x0370, 0x03FF],
-    'greek-ext': [0x1F00, 0x1FFF],
-    cyrillic: [0x0400, 0x04FF],
-    'cyrillic-ext': [0x0500, 0x052F],
-    vietnamese: [0x0102, 0x1EF9],
-    arabic: [0x0600, 0x06FF],
-    hebrew: [0x0590, 0x05FF],
-    devanagari: [0x0900, 0x097F],
-    thai: [0x0E00, 0x0E7F],
-    bengali: [0x0980, 0x09FF],
-    tamil: [0x0B80, 0x0BFF],
-    telugu: [0x0C00, 0x0C7F],
-    malayalam: [0x0D00, 0x0D7F],
-    kannada: [0x0C80, 0x0CFF],
-    gujarati: [0x0A80, 0x0AFF],
-    gurmukhi: [0x0A00, 0x0A7F],
-    sinhala: [0x0D80, 0x0DFF],
-    khmer: [0x1780, 0x17FF],
-    'vietnamese': [0x0102, 0x1EF9],
-};
+const PAGE_SIZE = 100;
+let currentPage = 0;
 
-function generateCharacterMapFromFont(font, containerElement, unicodeRange = [32, 126]) {
-    const fontClass = `custom-font-${Date.now()}`;
+function renderGlyphPage(characterSet, page, font) {
+    const start = page * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    const pageCharacters = characterSet.slice(start, end);
+    const html = createGlyphBoxesFromCharSet(pageCharacters);
+    displayFontInfo(html);
+    attachGlyphClickHandlers(font);
+}
 
-    // Inject @font-face style if not already present (optional)
-    const style = document.createElement('style');
-    style.textContent = `
-        @font-face {
-            font-family: '${fontClass}';
-            src: url('${URL.createObjectURL(new Blob([font.toArrayBuffer()], { type: 'font/ttf' }))}');
-        }
-    `;
-    document.head.appendChild(style);
+function setupPaginationControls(characterSet, font) {
+    const totalPages = Math.ceil(characterSet.length / PAGE_SIZE);
+    const controls = document.getElementById('pagination-controls');
+    controls.innerHTML = '';
 
-    // Clear previous content
-    containerElement.innerHTML = '';
-
-    // Add container class for styling (optional)
-    containerElement.classList.add('character-map');
-
-    // Generate glyph boxes
-    for (let code = unicodeRange[0]; code <= unicodeRange[1]; code++) {
-        const glyph = font.charToGlyph(String.fromCharCode(code));
-        if (!glyph) continue;
-
-        const char = String.fromCharCode(code);
-        const box = document.createElement('div');
-        box.textContent = char;
-        box.title = `U+${code.toString(16).toUpperCase()}`;
-        box.classList.add('glyph-box', fontClass); // for custom font & styling
-
-        containerElement.appendChild(box);
-
-        box.addEventListener('click', () => handleGlyphClick(char, font));
+    for (let i = 0; i < totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.addEventListener('click', () => {
+            currentPage = i;
+            renderGlyphPage(characterSet, currentPage, font);
+        });
+        controls.appendChild(btn);
     }
 }
 
-function handleGlyphClick(char, font) {
+function handleGlyphClick(char, font, codePoint) {
+    if (!font || typeof font.charToGlyph !== 'function') {
+        console.error("Invalid font passed to handleGlyphClick", font);
+        return;
+    }
+
     const glyph = font.charToGlyph(char);
-    if (!glyph) return;
+    if (!glyph) {
+        console.warn(`No glyph found for: ${char}`);
+        return;
+    }
 
     const glyphInfo = {
         name: glyph.name,
@@ -1548,8 +1529,30 @@ function handleGlyphClick(char, font) {
         leftSideBearing: glyph.leftSideBearing
     };
 
+    // --- Display glyph info as before ---
     displayGlyphPreview(glyph, font);
     displayGlyphInfo(glyphInfo);
+
+    // --- UI updates below ---
+
+    // 1. Update .selected classes
+    $('#charmap .glyph-box').removeClass('selected');
+    $('#glyph .tab, #glyph .glyph-toggles a').removeClass('selected');
+    $('#glyph .tab').hide();
+
+    $('#charmap .glyph-box.char-' + codePoint).addClass('selected');
+    $('#glyph #toggle-glyphPreview').addClass('selected');
+    $('#glyph #glyphPreview').fadeIn(250).addClass('selected');
+
+    // 2. Animate panel if closed
+    const $glyph = $('#glyph');
+    if ($glyph.hasClass('closed')) {
+        $glyph
+            .removeClass('closed')
+            .addClass('open')
+            .css({ width: '0px', right: '0px', display: 'block' }) // Start offscreen to the right
+            .animate({ right: '0px', width: '500px' }, 300); // Animate into view
+    }
 }
 
 function displayGlyphPreview(glyph, font) {
@@ -1622,7 +1625,7 @@ function displayGlyphPreview(glyph, font) {
         // Left label
         const leftLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         leftLabel.setAttribute('x', -padding + 5);
-        leftLabel.setAttribute('y', y - 4);
+        leftLabel.setAttribute('y', y - 14);
         leftLabel.setAttribute('fill', color);
         leftLabel.setAttribute('font-size', '64');
         leftLabel.setAttribute('font-family', 'sans-serif');
@@ -1632,7 +1635,7 @@ function displayGlyphPreview(glyph, font) {
         // Right label
         const rightLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         rightLabel.setAttribute('x', width + padding - 5);
-        rightLabel.setAttribute('y', y - 4);
+        rightLabel.setAttribute('y', y - 14);
         rightLabel.setAttribute('fill', color);
         rightLabel.setAttribute('font-size', '64');
         rightLabel.setAttribute('font-family', 'sans-serif');
@@ -1650,14 +1653,14 @@ function displayGlyphPreview(glyph, font) {
         line.setAttribute('y2', -descender * scale + padding);
         line.setAttribute('stroke', '#999');
         line.setAttribute('stroke-dasharray', '4,2');
-        line.setAttribute('stroke-width', '1');
+        line.setAttribute('stroke-width', '2.5');
         svg.appendChild(line);
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', xPos + 4);
-        text.setAttribute('y', 40); // readable position above baseline
+        text.setAttribute('y', 65); // readable position above baseline
         text.setAttribute('fill', '#555');
-        text.setAttribute('font-size', '28');
+        text.setAttribute('font-size', '48');
         text.setAttribute('font-family', 'monospace');
         text.textContent = i === 0 ? '0' : `${Math.round(glyph.advanceWidth)}`;
         svg.appendChild(text);
@@ -1707,18 +1710,18 @@ function displayGlyphPreview(glyph, font) {
 }
 
 function displayGlyphInfo(info) {
-    $('#character-map #glyphInfo .data-item.name').text(info.name);
-    $('#character-map #glyphInfo .data-item.unicode').text(info.unicode);
-    $('#character-map #glyphInfo .data-item.index').text(info.index);
-    $('#character-map #glyphInfo .data-item.xmin').text(info.xMin);
-    $('#character-map #glyphInfo .data-item.xmax').text(info.xMax);
-    $('#character-map #glyphInfo .data-item.ymin').text(info.yMin);
-    $('#character-map #glyphInfo .data-item.ymax').text(info.yMax);
-    $('#character-map #glyphInfo .data-item.advancewidth').text(info.advanceWidth);
-    $('#character-map #glyphInfo .data-item.leftsidebearing').text(info.leftSideBearing);
+    console.log(info);
+
+    $('#character-map #glyphInfo .data-item.name').text(info.name ?? '');
+    $('#character-map #glyphInfo .data-item.unicode').text(info.unicode ?? '');
+    $('#character-map #glyphInfo .data-item.index').text(info.index ?? '');
+    $('#character-map #glyphInfo .data-item.xmin').text(info.xMin ?? '');
+    $('#character-map #glyphInfo .data-item.xmax').text(info.xMax ?? '');
+    $('#character-map #glyphInfo .data-item.ymin').text(info.yMin ?? '');
+    $('#character-map #glyphInfo .data-item.ymax').text(info.yMax ?? '');
+    $('#character-map #glyphInfo .data-item.advancewidth').text(info.advanceWidth ?? '');
+    $('#character-map #glyphInfo .data-item.leftsidebearing').text(info.leftSideBearing ?? '');
 }
-
-
 
 /**
 * opentype.js helper

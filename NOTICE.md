@@ -61,6 +61,19 @@ The underlying WOFF2 reference code is from Google and licensed under the Apache
 
 ---
 
+### Glytter
+Website: [Glytter GitHub](https://github.com/hellogreg/glytter)
+License: MPL (Mozilla Public License) 2.0
+[View license](https://github.com/hellogreg/glytter/blob/main/LICENSE)
+
+---
+
+### Fontkit
+Website: [Fontkit GitHub](https://github.com/foliojs/fontkit)
+License: MIT
+
+---
+
 ## Your Project License
 
 The main project code is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more information.
